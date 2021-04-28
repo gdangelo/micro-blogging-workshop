@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { signIn, useSession } from 'next-auth/client';
+import { signIn, signOut, useSession } from 'next-auth/client';
 import GithubIcon from '../components/GithubIcon';
 import { TerminalIcon } from '@heroicons/react/outline';
 
@@ -38,6 +38,7 @@ const Header = () => {
                     width={32}
                     height={32}
                     className="rounded-full border-2 border-blue-600"
+                    onClick={() => signOut()}
                   />
                   <p>
                     Hello, {session.user.name?.split(' ')?.[0] ?? 'there'}{' '}

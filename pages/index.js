@@ -1,4 +1,5 @@
 import Head from 'next/head';
+import Link from 'next/link';
 import { signIn, useSession } from 'next-auth/client';
 import { PencilIcon } from '@heroicons/react/outline';
 import { Layout } from '../sections';
@@ -54,14 +55,12 @@ export default function Home() {
                   </p>
                 </div>
               ) : (
-                <button
-                  type="button"
-                  onClick={null}
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-md text-lg sm:text-xl focus:outline-none focus:ring-4 focus:ring-blue-600 focus:ring-opacity-50 whitespace-nowrap flex items-center space-x-2"
-                >
-                  <PencilIcon className="w-6 h-6 flex-shrink-0" />
-                  <span>Write a blog post</span>
-                </button>
+                <Link href="/write">
+                  <a className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-md text-lg sm:text-xl focus:outline-none focus:ring-4 focus:ring-blue-600 focus:ring-opacity-50 whitespace-nowrap flex items-center space-x-2">
+                    <PencilIcon className="w-6 h-6 flex-shrink-0" />
+                    <span>Write a blog post</span>
+                  </a>
+                </Link>
               )}
             </div>
           ) : null}
