@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import Head from 'next/head';
 import Link from 'next/link';
 import { signIn, useSession } from 'next-auth/client';
 import faunadb, { query as q } from 'faunadb';
@@ -35,11 +34,6 @@ export default function Home() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Head>
-        <title>Micro-Blogging App</title>
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-
       <Layout>
         {/* Hero section */}
         <section className="flex flex-col justify-center items-center text-center py-24 space-y-10">
@@ -95,7 +89,10 @@ export default function Home() {
         {/* Blog posts section */}
         <section className="grid sm:grid-cols-2 gap-8 max-w-screen-lg mx-auto">
           {posts.map(({ data, ref }) => (
-            <div key={ref.value.id} className="rounded-md border p-4">
+            <div
+              key={ref.value.id}
+              className="rounded-md border dark:border-gray-700 p-6 dark:bg-gray-800"
+            >
               <h3 className="text-3xl font-bold leading-snug tracking-tight mb-2">
                 {data.title}
               </h3>

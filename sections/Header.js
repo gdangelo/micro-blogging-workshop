@@ -1,13 +1,17 @@
 import Link from 'next/link';
 import { signIn, signOut, useSession } from 'next-auth/client';
+import { useTheme } from 'next-themes';
+
 import GithubIcon from '../components/GithubIcon';
 import { TerminalIcon } from '@heroicons/react/outline';
+import { MoonIcon, SunIcon } from '@heroicons/react/solid';
 
 const Header = () => {
   const [session, loading] = useSession();
+  const { theme, setTheme } = useTheme();
 
   return (
-    <header className="h-16 border-b border-gray-100">
+    <header className="h-16 border-b border-gray-100 dark:border-gray-700">
       <div className="container mx-auto flex justify-between items-center px-4 sm:px-6 py-4">
         {/* Logo */}
         <Link href="/">
@@ -19,7 +23,7 @@ const Header = () => {
           </a>
         </Link>
 
-        <div className="flex items-center space-x-6">
+        <div className="flex items-center space-x-8">
           {!loading ? (
             <div>
               {/* Sign in */}
@@ -51,14 +55,29 @@ const Header = () => {
             </div>
           ) : null}
 
-          <a
-            href="https://github.com/gdangelo/micro-blogging-workshop"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="opacity-60 hover:opacity-100 transition-opacity"
-          >
-            <GithubIcon className="w-6 h-6 flex-shrink-0" />
-          </a>
+          <div className="flex items-center space-x-2">
+            <a
+              href="https://github.com/gdangelo/micro-blogging-workshop"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <GithubIcon className="w-6 h-6" />
+            </a>
+
+            {theme === 'dark' ? (
+              <SunIcon
+                className="w-6 h-6"
+                role="button"
+                onClick={() => setTheme('light')}
+              />
+            ) : (
+              <MoonIcon
+                className="w-6 h-6"
+                role="button"
+                onClick={() => setTheme('dark')}
+              />
+            )}
+          </div>
         </div>
       </div>
     </header>
