@@ -1,11 +1,37 @@
+import { useState, useEffect } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
 import { signIn, useSession } from 'next-auth/client';
+import faunadb, { query as q } from 'faunadb';
+
 import { PencilIcon } from '@heroicons/react/outline';
 import { Layout } from '../sections';
 
+const db = new faunadb.Client({
+  secret: process.env.NEXT_PUBLIC_FAUNADB_SECRET,
+});
+
 export default function Home() {
   const [session, loading] = useSession();
+  const [posts, setPosts] = useState([]);
+
+  useEffect(() => {
+    const getPosts = async () => {
+      try {
+        const { data } = await db.query(
+          q.Map(
+            q.Paginate(q.Match(q.Index('all_posts')), { size: 10 }),
+            q.Lambda('ref', q.Get(q.Var('ref')))
+          )
+        );
+        setPosts(data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    getPosts();
+  }, []);
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -16,7 +42,7 @@ export default function Home() {
 
       <Layout>
         {/* Hero section */}
-        <section className="flex flex-col justify-center items-center text-center space-y-10">
+        <section className="flex flex-col justify-center items-center text-center py-24 space-y-10">
           {/* Headlines */}
           <div className="space-y-4 max-w-4xl mx-auto">
             <h1 className="text-4xl sm:text-7xl font-bold capitalize">
@@ -64,6 +90,26 @@ export default function Home() {
               )}
             </div>
           ) : null}
+        </section>
+
+        {/* Blog posts section */}
+        <section className="grid sm:grid-cols-2 gap-8 max-w-screen-lg mx-auto">
+          {posts.map(({ data, ref }) => (
+            <div key={ref.value.id} className="rounded-md border p-4">
+              <h3 className="text-3xl font-bold leading-snug tracking-tight mb-2">
+                {data.title}
+              </h3>
+              <p className="mb-1">{data.author}</p>
+              <p className="mb-4">
+                {new Intl.DateTimeFormat('en', {
+                  year: 'numeric',
+                  month: 'short',
+                  day: '2-digit',
+                }).format(new Date(data.published_at.value))}
+              </p>
+              <p className="text-gray-500">{data.content.slice(0, 250)}</p>
+            </div>
+          ))}
         </section>
       </Layout>
     </div>
