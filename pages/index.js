@@ -98,11 +98,12 @@ export default function Home() {
               </h3>
               <p className="mb-1">{data.author}</p>
               <p className="mb-4">
-                {new Intl.DateTimeFormat('en', {
-                  year: 'numeric',
-                  month: 'short',
-                  day: '2-digit',
-                }).format(new Date(data.published_at.value))}
+                {data?.published_at?.value &&
+                  new Intl.DateTimeFormat('en', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: '2-digit',
+                  }).format(new Date(data.published_at.value))}
               </p>
               <p className="text-gray-500">{data.content.slice(0, 250)}</p>
             </div>

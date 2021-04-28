@@ -1,14 +1,23 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { useSession } from 'next-auth/client';
-import { EyeIcon, PencilIcon, SupportIcon } from '@heroicons/react/outline';
+import faunadb, { query as q } from 'faunadb';
+
+import {
+  EyeIcon,
+  PencilIcon,
+  LightningBoltIcon,
+} from '@heroicons/react/outline';
 import { MarkdownIcon } from '../components';
 import { Layout } from '../sections';
+
+const db = new faunadb.Client({
+  secret: process.env.NEXT_PUBLIC_FAUNADB_SECRET,
+});
 
 const tabs = [
   { text: 'Write', icon: PencilIcon },
   { text: 'Preview', icon: EyeIcon },
-  { text: 'Guide', icon: SupportIcon },
 ];
 
 const Write = () => {
@@ -18,12 +27,37 @@ const Write = () => {
   const [activeTab, setActiveTab] = useState(0);
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
+  const [publishing, setPublishing] = useState(false);
 
   useEffect(() => {
     if (!(session || loading)) {
       router.push('/api/auth/signin');
     }
   }, [session, loading]);
+
+  const publishPost = async () => {
+    try {
+      if (title && content) {
+        setPublishing(true);
+
+        await db.query(
+          q.Create(q.Collection('blog_posts'), {
+            data: {
+              title,
+              content,
+            },
+          })
+        );
+
+        setTitle('');
+        setContent('');
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setPublishing(false);
+    }
+  };
 
   if (loading) return 'Loading...';
 
@@ -34,11 +68,11 @@ const Write = () => {
       <div className="w-full max-w-screen-lg mx-auto pt-12 space-y-6">
         {/* Blog post title */}
         <textarea
-          vaue={title}
+          value={title}
           onChange={e => setTitle(e.target.value)}
-          maxlength="150"
+          maxLength="150"
           placeholder="Title…"
-          class="w-full text-3xl font-bold leading-snug bg-transparent outline-none appearance-none resize-none"
+          className="w-full text-3xl font-bold leading-snug bg-transparent outline-none appearance-none resize-none"
         />
 
         <div>
@@ -49,9 +83,9 @@ const Write = () => {
                 <button
                   key={text}
                   onClick={() => setActiveTab(i)}
-                  className={`flex items-center space-x-1 transition-colors px-2 py-1 rounded focus:outline-none ${
+                  className={`flex items-center space-x-1 transition-colors px-2 py-1 rounded-md focus:outline-none ${
                     activeTab === i
-                      ? 'text-blue-600 bg-blue-100 cursor-default select-none'
+                      ? 'text-blue-600 cursor-default select-none'
                       : 'hover:text-blue-600 bg-transparent hover:bg-blue-100 focus:ring-2 focus:ring-blue-600 focus:ring-opacity-50'
                   }`}
                 >
@@ -59,25 +93,34 @@ const Write = () => {
                   <span>{text}</span>
                 </button>
               ))}
+
+              <a
+                href="https://daringfireball.net/projects/markdown/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-blue-600"
+              >
+                <MarkdownIcon className="w-5 h-5" />
+              </a>
             </div>
 
-            <a
-              href="https://daringfireball.net/projects/markdown/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center space-x-1 hover:text-blue-600"
+            <button
+              type="button"
+              onClick={publishPost}
+              disabled={!(title && content) || publishing}
+              className="flex items-center space-x-1 transition-colors px-4 py-1 rounded-md focus:outline-none border border-blue-600 bg-blue-600 text-gray-100 hover:text-gray-700 dark:text-gray-100 hover:bg-transparent hover:border-gray-700 dark:hover:border-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <MarkdownIcon className="w-5 h-5 flex-shrink-0" />
-              <span className="text-xs">Markdown supported</span>
-            </a>
+              <LightningBoltIcon className="w-5 h-5" />
+              <span>Publish</span>
+            </button>
           </div>
 
           {/* Blog post content */}
           <textarea
-            vaue={content}
+            value={content}
             onChange={e => setContent(e.target.value)}
             placeholder="Tell your story..."
-            class="w-full resize-none p-4 bg-transparent focus:outline-none text-xl leading-snug py-12 min-h-screen"
+            className="w-full resize-none p-4 bg-transparent focus:outline-none text-xl leading-snug py-12 min-h-screen"
           />
         </div>
       </div>
