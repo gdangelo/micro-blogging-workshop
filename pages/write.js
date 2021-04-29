@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { useSession } from 'next-auth/client';
+import ReactMarkdown from 'react-markdown';
 import { faunaQueries } from '../fauna';
 
 import {
@@ -8,7 +9,7 @@ import {
   PencilIcon,
   LightningBoltIcon,
 } from '@heroicons/react/outline';
-import { MarkdownIcon } from '../components';
+import { MarkdownIcon, MDComponents } from '../components';
 import { Layout } from '../sections';
 
 const tabs = [
@@ -35,14 +36,16 @@ const Write = () => {
     try {
       if (title && content) {
         setPublishing(true);
-        await faunaQueries.createPost(title, content, session.user);
-        // Reset fields
-        setTitle('');
-        setContent('');
+        const { data } = await faunaQueries.createPost(
+          title,
+          content,
+          session.user
+        );
+        // Redirect to post page
+        router.push(`/posts/${data.slug}`);
       }
     } catch (error) {
       console.error(error);
-    } finally {
       setPublishing(false);
     }
   };
@@ -61,7 +64,8 @@ const Write = () => {
           maxLength="150"
           placeholder="Title…"
           disabled={publishing}
-          className="w-full text-3xl font-bold leading-snug bg-transparent outline-none appearance-none resize-none"
+          autoFocus
+          className="w-full text-3xl font-bold leading-snug bg-transparent outline-none appearance-none resize-none disabled:cursor-not-allowed"
         />
 
         <div>
@@ -111,13 +115,25 @@ const Write = () => {
           </div>
 
           {/* Blog post content */}
-          <textarea
-            value={content}
-            onChange={e => setContent(e.target.value)}
-            placeholder="Tell your story..."
-            disabled={publishing}
-            className="w-full resize-none p-4 bg-transparent focus:outline-none text-xl leading-snug py-12 min-h-screen"
-          />
+          <div className="px-4 py-12">
+            {activeTab === 0 ? (
+              <textarea
+                value={content}
+                onChange={e => setContent(e.target.value)}
+                placeholder="Tell your story..."
+                disabled={publishing}
+                className="w-full min-h-screen resize-none bg-transparent focus:outline-none text-xl leading-snug disabled:cursor-not-allowed"
+              />
+            ) : (
+              <article className="prose dark:prose-dark sm:prose-lg lg:prose-xl max-w-none min-h-screen">
+                {content ? (
+                  <ReactMarkdown components={MDComponents} children={content} />
+                ) : (
+                  <p>Nothing to preview yet...</p>
+                )}
+              </article>
+            )}
+          </div>
         </div>
       </div>
     </Layout>

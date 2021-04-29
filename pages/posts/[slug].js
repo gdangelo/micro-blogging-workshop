@@ -1,6 +1,7 @@
-import { useSession } from 'next-auth/client';
+import ReactMarkdown from 'react-markdown';
 import { faunaQueries } from '../../fauna';
 import { Layout } from '../../sections';
+import { MDComponents } from '../../components';
 
 const Post = ({
   title = '',
@@ -8,8 +9,6 @@ const Post = ({
   author = null,
   published_at = '',
 }) => {
-  const [session, loading] = useSession();
-
   return (
     <Layout>
       <article className="max-w-screen-md mx-auto py-12 space-y-16">
@@ -40,7 +39,7 @@ const Post = ({
         </header>
 
         <main className="prose dark:prose-dark sm:prose-lg lg:prose-xl max-w-none">
-          {content}
+          <ReactMarkdown components={MDComponents} children={content} />
         </main>
       </article>
     </Layout>

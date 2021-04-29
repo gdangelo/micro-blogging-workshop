@@ -5,7 +5,6 @@ import { useTheme } from 'next-themes';
 import { Logo, FlyoutMenu, MobileMenu, GithubIcon } from '../components';
 import {
   ChevronDownIcon,
-  DocumentTextIcon,
   GlobeIcon,
   PlusCircleIcon,
 } from '@heroicons/react/outline';
@@ -21,11 +20,6 @@ const links = [
     text: 'My posts',
     icon: GlobeIcon,
     href: '/posts',
-  },
-  {
-    text: 'My drafts',
-    icon: DocumentTextIcon,
-    href: '/drafts',
   },
 ];
 
