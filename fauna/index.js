@@ -26,11 +26,14 @@ class QueryManager {
     );
   }
 
-  getPosts() {
+  getPosts(options) {
     return this.client.query(
       q.Map(
-        q.Paginate(q.Match(q.Index('all_posts')), { size: 10 }),
-        q.Lambda('ref', q.Get(q.Var('ref')))
+        q.Paginate(
+          q.Match(q.Index('posts_sort_by_published_at_desc')),
+          options
+        ),
+        q.Lambda(['published_at', 'ref'], q.Get(q.Var('ref')))
       )
     );
   }

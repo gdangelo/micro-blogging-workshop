@@ -38,7 +38,7 @@ const Post = ({
           </div>
         </header>
 
-        <main className="prose dark:prose-dark sm:prose-lg lg:prose-xl max-w-none">
+        <main className="prose sm:prose-lg lg:prose-xl dark:prose-dark dark:sm:prose-lg-dark dark:lg:prose-xl-dark max-w-none">
           <ReactMarkdown components={MDComponents} children={content} />
         </main>
       </article>
