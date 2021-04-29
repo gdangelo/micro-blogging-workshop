@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { signOut } from 'next-auth/client';
 import { Logo } from './index';
 import { LogoutIcon, XIcon } from '@heroicons/react/outline';
 

@@ -60,6 +60,7 @@ const Write = () => {
           onChange={e => setTitle(e.target.value)}
           maxLength="150"
           placeholder="Title…"
+          disabled={publishing}
           className="w-full text-3xl font-bold leading-snug bg-transparent outline-none appearance-none resize-none"
         />
 
@@ -96,10 +97,16 @@ const Write = () => {
               type="button"
               onClick={publishPost}
               disabled={!(title && content) || publishing}
-              className="flex items-center space-x-1 transition-colors px-4 py-1 rounded-md focus:outline-none border border-blue-600 bg-blue-600 text-gray-100 hover:text-gray-700 dark:text-gray-100 hover:bg-transparent hover:border-gray-700 dark:hover:border-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex items-center space-x-1 transition-colors px-4 py-1 rounded-md focus:outline-none border border-blue-600 bg-blue-600 text-gray-100 hover:text-gray-700 dark:text-gray-100 hover:bg-transparent hover:border-gray-700 dark:hover:border-gray-100 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-blue-600 disabled:hover:text-gray-100 disabled:hover:border-blue-600 dark:disabled:hover:border-blue-600"
             >
-              <LightningBoltIcon className="w-5 h-5" />
-              <span>Publish</span>
+              {publishing ? (
+                'Publishing...'
+              ) : (
+                <>
+                  <LightningBoltIcon className="w-5 h-5" />
+                  <span>Publish</span>
+                </>
+              )}
             </button>
           </div>
 
@@ -108,6 +115,7 @@ const Write = () => {
             value={content}
             onChange={e => setContent(e.target.value)}
             placeholder="Tell your story..."
+            disabled={publishing}
             className="w-full resize-none p-4 bg-transparent focus:outline-none text-xl leading-snug py-12 min-h-screen"
           />
         </div>

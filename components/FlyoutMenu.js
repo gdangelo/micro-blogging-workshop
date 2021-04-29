@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { signOut } from 'next-auth/client';
 import Link from 'next/link';
 
 import { LogoutIcon } from '@heroicons/react/outline';

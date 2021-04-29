@@ -1,4 +1,5 @@
 import faunadb, { query as q } from 'faunadb';
+import slugify from 'slugify';
 
 class QueryManager {
   constructor() {
@@ -14,8 +15,12 @@ class QueryManager {
           title,
           content,
           published: true,
-          published_at: q.Time('now'),
+          published_at: q.ToString(q.Now()),
           author,
+          slug: slugify(title, {
+            lower: true,
+            strict: true,
+          }),
         },
       })
     );
@@ -28,6 +33,10 @@ class QueryManager {
         q.Lambda('ref', q.Get(q.Var('ref')))
       )
     );
+  }
+
+  getPostBySlug(slug) {
+    return this.client.query(q.Get(q.Match(q.Index('posts_by_slug'), slug)));
   }
 }
 
