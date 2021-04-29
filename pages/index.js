@@ -53,7 +53,7 @@ export default function Home() {
           {!loading ? (
             <div>
               {!session ? (
-                <div className="space-y-2">
+                <div className="space-y-3">
                   <button
                     type="button"
                     onClick={() => signIn()}
@@ -68,7 +68,7 @@ export default function Home() {
                       href="https://screencasts.alterclass.io"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-gray-900 hover:text-blue-600 hover:underline"
+                      className="text-gray-900 dark:text-gray-100 hover:text-blue-600 hover:underline"
                     >
                       AlterClass.io
                     </a>
