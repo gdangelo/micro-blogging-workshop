@@ -1,14 +1,10 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { signIn, useSession } from 'next-auth/client';
-import faunadb, { query as q } from 'faunadb';
+import { faunaQueries } from '../fauna';
 
 import { PencilIcon } from '@heroicons/react/outline';
 import { Layout } from '../sections';
-
-const db = new faunadb.Client({
-  secret: process.env.NEXT_PUBLIC_FAUNADB_SECRET,
-});
 
 export default function Home() {
   const [session, loading] = useSession();
@@ -17,18 +13,12 @@ export default function Home() {
   useEffect(() => {
     const getPosts = async () => {
       try {
-        const { data } = await db.query(
-          q.Map(
-            q.Paginate(q.Match(q.Index('all_posts')), { size: 10 }),
-            q.Lambda('ref', q.Get(q.Var('ref')))
-          )
-        );
+        const { data } = await faunaQueries.getPosts();
         setPosts(data);
       } catch (error) {
         console.error(error);
       }
     };
-
     getPosts();
   }, []);
 
@@ -88,7 +78,7 @@ export default function Home() {
 
         {/* Blog posts section */}
         <section className="grid sm:grid-cols-2 gap-8 max-w-screen-lg mx-auto">
-          {posts.map(({ data, ref }) => (
+          {posts?.map(({ data, ref }) => (
             <div
               key={ref.value.id}
               className="rounded-md border dark:border-gray-700 p-6 dark:bg-gray-800"
@@ -96,15 +86,26 @@ export default function Home() {
               <h3 className="text-3xl font-bold leading-snug tracking-tight mb-2">
                 {data.title}
               </h3>
-              <p className="mb-1">{data.author}</p>
-              <p className="mb-4">
-                {data?.published_at?.value &&
-                  new Intl.DateTimeFormat('en', {
-                    year: 'numeric',
-                    month: 'short',
-                    day: '2-digit',
-                  }).format(new Date(data.published_at.value))}
-              </p>
+              {data?.author ? (
+                <div className="flex items-center space-x-2 mb-4">
+                  <img
+                    src={data.author?.image}
+                    alt={data.author?.name}
+                    className="border-2 border-blue-600 rounded-full w-12 h-12"
+                  />
+                  <div className="text-sm">
+                    <p>{data.author?.name}</p>
+                    <p className="text-gray-500">
+                      {data?.published_at?.value &&
+                        new Intl.DateTimeFormat('en', {
+                          year: 'numeric',
+                          month: 'short',
+                          day: '2-digit',
+                        }).format(new Date(data.published_at.value))}
+                    </p>
+                  </div>
+                </div>
+              ) : null}
               <p className="text-gray-500">{data.content.slice(0, 250)}</p>
             </div>
           ))}

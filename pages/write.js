@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { useSession } from 'next-auth/client';
-import faunadb, { query as q } from 'faunadb';
+import { faunaQueries } from '../fauna';
 
 import {
   EyeIcon,
@@ -10,10 +10,6 @@ import {
 } from '@heroicons/react/outline';
 import { MarkdownIcon } from '../components';
 import { Layout } from '../sections';
-
-const db = new faunadb.Client({
-  secret: process.env.NEXT_PUBLIC_FAUNADB_SECRET,
-});
 
 const tabs = [
   { text: 'Write', icon: PencilIcon },
@@ -39,16 +35,8 @@ const Write = () => {
     try {
       if (title && content) {
         setPublishing(true);
-
-        await db.query(
-          q.Create(q.Collection('blog_posts'), {
-            data: {
-              title,
-              content,
-            },
-          })
-        );
-
+        await faunaQueries.createPost(title, content, session.user);
+        // Reset fields
         setTitle('');
         setContent('');
       }
