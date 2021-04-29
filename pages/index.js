@@ -79,39 +79,34 @@ export default function Home() {
         {/* Blog posts section */}
         <section className="grid sm:grid-cols-2 gap-8 max-w-screen-lg mx-auto">
           {posts?.map(({ data, ref }) => (
-            <div
-              key={ref.value.id}
-              className="rounded-md border dark:border-gray-700 p-6 dark:bg-gray-800 hover:shadow-xl transition-shadow"
-            >
-              <Link href={`/posts/${data?.slug}`}>
-                <a>
-                  <h3 className="text-3xl font-bold leading-snug tracking-tight mb-2">
-                    {data.title}
-                  </h3>
-                  {data?.author ? (
-                    <div className="flex items-center space-x-2 mb-4">
-                      <img
-                        src={data.author?.image}
-                        alt={data.author?.name}
-                        className="border-2 border-blue-600 rounded-full w-12 h-12"
-                      />
-                      <div className="text-sm">
-                        <p className="font-semibold">{data.author?.name}</p>
-                        <p className="text-gray-500">
-                          {data?.published_at &&
-                            new Intl.DateTimeFormat('en', {
-                              year: 'numeric',
-                              month: 'short',
-                              day: '2-digit',
-                            }).format(new Date(data.published_at))}
-                        </p>
-                      </div>
+            <Link key={ref.value.id} href={`/posts/${data?.slug}`}>
+              <a className="rounded-md border dark:border-gray-700 dark:bg-gray-800 hover:shadow-xl transition-shadow p-6">
+                <h3 className="text-3xl font-bold leading-snug tracking-tight mb-2">
+                  {data.title}
+                </h3>
+                {data?.author ? (
+                  <div className="flex items-center space-x-2 mb-4">
+                    <img
+                      src={data.author?.image}
+                      alt={data.author?.name}
+                      className="border-2 border-blue-600 rounded-full w-12 h-12"
+                    />
+                    <div className="text-sm">
+                      <p className="font-semibold">{data.author?.name}</p>
+                      <p className="text-gray-500">
+                        {data?.published_at &&
+                          new Intl.DateTimeFormat('en', {
+                            year: 'numeric',
+                            month: 'short',
+                            day: '2-digit',
+                          }).format(new Date(data.published_at))}
+                      </p>
                     </div>
-                  ) : null}
-                  <p className="text-gray-500">{data.content.slice(0, 250)}</p>
-                </a>
-              </Link>
-            </div>
+                  </div>
+                ) : null}
+                <p className="text-gray-500">{data.content.slice(0, 250)}</p>
+              </a>
+            </Link>
           ))}
         </section>
       </Layout>
