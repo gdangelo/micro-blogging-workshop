@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { signIn, useSession } from 'next-auth/client';
-import { faunaQueries } from '../fauna';
+import { faunaQueries } from '@/lib/fauna';
 
 import { PencilIcon } from '@heroicons/react/outline';
 import { Layout } from '@/sections/index';
@@ -64,8 +64,8 @@ export default function Home({ posts = [] }) {
 
         {/* Blog posts section */}
         <section className="grid sm:grid-cols-2 gap-8 max-w-screen-lg mx-auto">
-          {posts?.map(({ data, ref }) => (
-            <Link key={ref} href={`/posts/${data?.slug}`}>
+          {posts?.map(data => (
+            <Link key={data.id} href={`/posts/${data?.slug}`}>
               <a className="rounded-md border dark:border-gray-700 dark:bg-gray-800 hover:shadow-xl transition-shadow p-6">
                 <h3 className="text-3xl font-bold leading-snug tracking-tight mb-2">
                   {data.title}
@@ -102,10 +102,10 @@ export default function Home({ posts = [] }) {
 
 export async function getStaticProps() {
   // Fetch the 10 most recent posts
-  let { data } = await faunaQueries.getPosts({ size: 10 });
+  const { data } = await faunaQueries.getPosts({ size: 10 });
 
-  // Serialize data by flattening the ref property from data
-  data = data?.map(post => ({ ...post, ref: post.ref.value.id }));
+  // Serialize data by flattening the ref property
+  const posts = data?.map(({ data, ref }) => ({ ...data, id: ref.value.id }));
 
-  return { props: { posts: data } };
+  return { props: { posts } };
 }

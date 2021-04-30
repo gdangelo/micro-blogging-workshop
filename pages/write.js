@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { useSession } from 'next-auth/client';
 import ReactMarkdown from 'react-markdown';
-import { faunaQueries } from '../fauna';
+import { faunaQueries } from '@/lib/fauna';
 
 import {
   EyeIcon,
