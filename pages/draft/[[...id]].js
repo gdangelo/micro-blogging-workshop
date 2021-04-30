@@ -145,7 +145,7 @@ const Draft = () => {
   return (
     <Layout pageMeta={pageMeta}>
       <div className="w-full max-w-screen-lg mx-auto pt-8 sm:pt-12">
-        {id ? (
+        {id && !published ? (
           <div className="flex justify-start items-center text-gray-500 mb-6">
             <p className="flex items-center space-x-1 bg-gray-100 dark:bg-gray-800 rounded-md px-2 py-1">
               {savingStatus === 'failed' ? (
