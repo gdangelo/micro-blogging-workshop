@@ -50,7 +50,7 @@ const Post = ({
             {title}
           </h1>
 
-          <div className="flex justify-between items-center space-x-4 border-b border-t dark:border-gray-700 py-6">
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-4 sm:space-y-0 sm:space-x-4 border-b border-t dark:border-gray-700 py-6">
             {/* Author */}
             <div className="flex items-center space-x-2">
               <img
@@ -72,9 +72,9 @@ const Post = ({
             </div>
 
             {/* Actions */}
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-1">
               <Link href={`/draft/${encodeURIComponent(id)}`}>
-                <a className="bg-transparent hover:bg-gray-200 dark:hover:bg-gray-800 rounded-md px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-opacity-50 flex items-center space-x-2">
+                <a className="bg-transparent hover:bg-gray-200 dark:hover:bg-gray-800 rounded-md px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-opacity-50 flex items-center space-x-1">
                   <PencilIcon className="w-5 h-5 flex-shrink-0" />
                   <span>Edit</span>
                 </a>
@@ -82,7 +82,7 @@ const Post = ({
               <button
                 type="button"
                 onClick={deletePost}
-                className="bg-transparent hover:bg-gray-200 dark:hover:bg-gray-800 rounded-md px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-opacity-50 flex items-center space-x-2"
+                className="bg-transparent hover:bg-gray-200 dark:hover:bg-gray-800 rounded-md px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-opacity-50 flex items-center space-x-1"
               >
                 <TrashIcon className="w-5 h-5 flex-shrink-0" />
                 <span>Delete</span>

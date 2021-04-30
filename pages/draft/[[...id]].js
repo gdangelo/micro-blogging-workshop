@@ -129,6 +129,8 @@ const Draft = () => {
         toast.success('Redirecting...', { id: toastId });
         // Redirect to post page
         router.push(`/posts/${slug}`);
+      } else {
+        toast.error('Looks like you forgot to add a title!');
       }
     } catch (error) {
       // Display error message
