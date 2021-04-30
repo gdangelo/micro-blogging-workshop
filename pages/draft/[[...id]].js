@@ -39,8 +39,8 @@ const Draft = () => {
   const [savingStatus, setSavingStatus] = useState('idle');
 
   // Debounced values
-  const debouncedTitle = useDebounce(title);
-  const debouncedContent = useDebounce(content);
+  const debouncedTitle = useDebounce(title, 500);
+  const debouncedContent = useDebounce(content, 500);
 
   const id = router.query?.id?.[0] ?? '';
 
