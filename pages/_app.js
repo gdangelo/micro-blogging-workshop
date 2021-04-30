@@ -1,5 +1,5 @@
-import '../styles/globals.css';
-import '../styles/nprogress.css';
+import '@/styles/globals.css';
+import '@/styles/nprogress.css';
 
 import Router from 'next/router';
 import { Provider as AuthProvider } from 'next-auth/client';

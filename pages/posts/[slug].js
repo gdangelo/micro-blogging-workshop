@@ -1,7 +1,7 @@
 import ReactMarkdown from 'react-markdown';
 import { faunaQueries } from '../../fauna';
-import { Layout } from '../../sections';
-import { MDComponents } from '../../components';
+import { Layout } from '@/sections/index';
+import { MDComponents } from '@/components/index';
 
 const Post = ({
   title = '',

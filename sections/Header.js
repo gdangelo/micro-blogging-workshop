@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { signIn, useSession } from 'next-auth/client';
 import { useTheme } from 'next-themes';
 
-import { Logo, FlyoutMenu, MobileMenu, GithubIcon } from '../components';
+import { Logo, FlyoutMenu, MobileMenu, GithubIcon } from '@/components/index';
 import {
   ChevronDownIcon,
   GlobeIcon,

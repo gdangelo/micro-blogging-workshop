@@ -1,10 +1,9 @@
-import { useState } from 'react';
 import Link from 'next/link';
 import { signIn, useSession } from 'next-auth/client';
 import { faunaQueries } from '../fauna';
 
 import { PencilIcon } from '@heroicons/react/outline';
-import { Layout } from '../sections';
+import { Layout } from '@/sections/index';
 
 export default function Home({ posts = [] }) {
   const [session, loading] = useSession();

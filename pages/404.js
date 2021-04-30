@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Layout } from '../sections';
+import { Layout } from '@/sections/index';
 
 const NotFound = () => (
   <Layout>

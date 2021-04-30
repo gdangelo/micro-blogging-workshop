@@ -9,8 +9,8 @@ import {
   PencilIcon,
   LightningBoltIcon,
 } from '@heroicons/react/outline';
-import { MarkdownIcon, MDComponents } from '../components';
-import { Layout } from '../sections';
+import { MarkdownIcon, MDComponents } from '@/components/index';
+import { Layout } from '@/sections/index';
 
 const tabs = [
   { text: 'Write', icon: PencilIcon },
