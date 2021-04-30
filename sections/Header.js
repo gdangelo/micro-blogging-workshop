@@ -53,7 +53,7 @@ const Header = () => {
       <div className="container mx-auto flex justify-between items-center px-4 sm:px-6 py-4">
         <Logo />
 
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center space-x-3">
           <a
             href="https://github.com/gdangelo/micro-blogging-workshop"
             target="_blank"

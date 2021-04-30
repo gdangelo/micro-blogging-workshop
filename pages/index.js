@@ -11,7 +11,7 @@ export default function Home({ posts = [] }) {
   return (
     <Layout>
       {/* Hero section */}
-      <section className="flex flex-col justify-center items-center text-center py-24 space-y-10">
+      <section className="flex flex-col justify-center items-center text-center pt-12 sm:pt-24 pb-24 space-y-10">
         {/* Headlines */}
         <div className="space-y-4 max-w-4xl mx-auto">
           <h1 className="text-4xl sm:text-7xl font-bold capitalize">
