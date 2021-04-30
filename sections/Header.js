@@ -53,24 +53,24 @@ const Header = () => {
       <div className="container mx-auto flex justify-between items-center px-4 sm:px-6 py-4">
         <Logo />
 
-        <div className="flex items-center space-x-2 sm:space-x-3">
+        <div className="flex items-center space-x-4">
           <a
             href="https://github.com/gdangelo/micro-blogging-workshop"
             target="_blank"
             rel="noopener noreferrer"
           >
-            <GithubIcon className="w-6 h-6" />
+            <GithubIcon className="w-7 h-7" />
           </a>
 
           {theme === 'dark' ? (
             <SunIcon
-              className="w-6 h-6"
+              className="w-7 h-7"
               role="button"
               onClick={() => setTheme('light')}
             />
           ) : (
             <MoonIcon
-              className="w-6 h-6"
+              className="w-7 h-7"
               role="button"
               onClick={() => setTheme('dark')}
             />
@@ -83,7 +83,7 @@ const Header = () => {
                 <button
                   type="button"
                   onClick={() => signIn()}
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-2 sm:px-4 py-1 sm:py-2 rounded-md focus:outline-none focus:ring-4 focus:ring-blue-600 focus:ring-opacity-50 whitespace-nowrap"
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md focus:outline-none focus:ring-4 focus:ring-blue-600 focus:ring-opacity-50 whitespace-nowrap"
                 >
                   Sign in
                 </button>
