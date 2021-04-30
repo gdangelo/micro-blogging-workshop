@@ -1,8 +1,12 @@
 import Link from 'next/link';
 import { Layout } from '@/sections/index';
 
+const pageMeta = {
+  title: 'Oops! You found a missing page...',
+};
+
 const NotFound = () => (
-  <Layout>
+  <Layout pageMeta={pageMeta}>
     <div className="container mx-auto py-16 h-full">
       <div className="space-y-12 h-full flex flex-col items-center justify-center">
         <div className="space-y-6 text-center">

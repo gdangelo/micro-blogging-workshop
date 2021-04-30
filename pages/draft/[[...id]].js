@@ -18,6 +18,10 @@ const tabs = [
   { text: 'Preview', icon: EyeIcon },
 ];
 
+const pageMeta = {
+  title: 'Write blog post',
+};
+
 const Draft = props => {
   const router = useRouter();
 
@@ -100,7 +104,7 @@ const Draft = props => {
   if (loading || !session) return null;
 
   return (
-    <Layout>
+    <Layout pageMeta={pageMeta}>
       <div className="w-full max-w-screen-lg mx-auto pt-12 space-y-6">
         {/* Blog post title */}
         <textarea

@@ -35,8 +35,15 @@ const Post = ({
     }
   };
 
+  const pageMeta = {
+    type: 'article',
+    title,
+    description: content.slice(0, 250),
+    date: published_at ? new Date(published_at).toISOString() : '',
+  };
+
   return (
-    <Layout>
+    <Layout pageMeta={pageMeta}>
       <article className="max-w-screen-lg mx-auto py-12 space-y-16">
         <header className="space-y-8">
           <h1 className="max-w-screen-md lg:text-6xl md:text-5xl sm:text-4xl text-3xl w-full font-extrabold leading-tight">
