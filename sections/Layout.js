@@ -41,7 +41,7 @@ const Layout = ({ children, pageMeta }) => {
         {meta.image && <meta name="twitter:image" content={meta.image} />}
       </Head>
 
-      <div className="min-h-screen flex flex-col overflow-hidden">
+      <div className="min-h-screen flex flex-col">
         <Header />
         <main className="flex-grow container mx-auto px-4 sm:px-6">
           {children}

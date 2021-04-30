@@ -42,7 +42,7 @@ const FlyoutMenu = ({ links = [], show = false, onClose = () => null }) => {
   return (
     <div
       ref={menuRef}
-      className="absolute top-10 right-0 z-10 w-80 hidden sm:block"
+      className="absolute top-10 right-0 z-50 w-80 hidden sm:block"
     >
       <div className="rounded-lg shadow-lg ring-1 ring-gray-900 dark:ring-gray-700 ring-opacity-5 bg-gray-50 text-gray-900 dark:bg-gray-900 dark:text-gray-100 divide-y divide-gray-200 dark:divide-gray-700">
         <div className="p-5 space-y-8">
