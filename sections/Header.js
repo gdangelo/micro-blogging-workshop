@@ -14,7 +14,7 @@ const links = [
   {
     text: 'Write a new post',
     icon: PlusCircleIcon,
-    href: '/write',
+    href: '/draft',
   },
   {
     text: 'My posts',

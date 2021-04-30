@@ -51,7 +51,7 @@ export default function Home({ posts = [] }) {
                   </p>
                 </div>
               ) : (
-                <Link href="/write">
+                <Link href="/draft">
                   <a className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-md text-lg sm:text-xl focus:outline-none focus:ring-4 focus:ring-blue-600 focus:ring-opacity-50 whitespace-nowrap flex items-center space-x-2">
                     <PencilIcon className="w-6 h-6 flex-shrink-0" />
                     <span>Write a blog post</span>
@@ -65,7 +65,10 @@ export default function Home({ posts = [] }) {
         {/* Blog posts section */}
         <section className="grid sm:grid-cols-2 gap-8 max-w-screen-lg mx-auto">
           {posts?.map(data => (
-            <Link key={data.id} href={`/posts/${data?.slug}`}>
+            <Link
+              key={data.id}
+              href={`/posts/${encodeURIComponent(data?.slug)}`}
+            >
               <a className="rounded-md border dark:border-gray-700 dark:bg-gray-800 hover:shadow-xl transition-shadow p-6">
                 <h3 className="text-3xl font-bold leading-snug tracking-tight mb-2">
                   {data.title}

@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { useSession } from 'next-auth/client';
-import ReactMarkdown from 'react-markdown';
 import { faunaQueries } from '@/lib/fauna';
+import { Layout } from '@/sections/index';
+import ReactMarkdown from 'react-markdown';
+import toast from 'react-hot-toast';
 
 import {
   EyeIcon,
@@ -10,15 +12,15 @@ import {
   LightningBoltIcon,
 } from '@heroicons/react/outline';
 import { MarkdownIcon, MDComponents } from '@/components/index';
-import { Layout } from '@/sections/index';
 
 const tabs = [
   { text: 'Write', icon: PencilIcon },
   { text: 'Preview', icon: EyeIcon },
 ];
 
-const Write = () => {
+const Draft = props => {
   const router = useRouter();
+
   const [session, loading] = useSession();
 
   const [activeTab, setActiveTab] = useState(0);
@@ -26,33 +28,76 @@ const Write = () => {
   const [content, setContent] = useState('');
   const [publishing, setPublishing] = useState(false);
 
+  const id = router.query?.id?.[0] ?? '';
+
+  // Check if user is authentication
   useEffect(() => {
     if (!(session || loading)) {
       router.push('/api/auth/signin');
     }
   }, [session, loading]);
 
+  // Retrieve data from post
+  useEffect(() => {
+    const getPost = async () => {
+      try {
+        if (id) {
+          // Perform query
+          const { data } = await faunaQueries.getPost(id);
+          // Update state
+          setTitle(data.title);
+          setContent(data.content);
+        } else {
+          // Reset fields
+          setTitle('');
+          setContent('');
+        }
+      } catch (error) {
+        // Display error message
+        toast.error('Unable to retrieve post');
+      }
+    };
+    getPost();
+  }, [id]);
+
   const publishPost = async () => {
+    let toastId;
+
     try {
       if (title && content) {
+        // Start loading state...
         setPublishing(true);
-        const { data } = await faunaQueries.createPost(
-          title,
-          content,
-          session.user
-        );
+        toastId = toast.loading('Publishing...');
+        // Perform query
+        let slug;
+        if (id) {
+          const { data } = await faunaQueries.updatePost(id, {
+            title,
+            content,
+          });
+          slug = data.slug;
+        } else {
+          const { data } = await faunaQueries.createPost(
+            title,
+            content,
+            session.user
+          );
+          slug = data.slug;
+        }
+        // Display success message
+        toast.success('Redirecting...', { id: toastId });
         // Redirect to post page
-        router.push(`/posts/${data.slug}`);
+        router.push(`/posts/${slug}`);
       }
     } catch (error) {
-      console.error(error);
+      // Display error message
+      toast.error('Unable to publish post', { id: toastId });
+      // Stop loading state
       setPublishing(false);
     }
   };
 
-  if (loading) return 'Loading...';
-
-  if (!session) return 'Redirecting...';
+  if (loading || !session) return null;
 
   return (
     <Layout>
@@ -140,4 +185,4 @@ const Write = () => {
   );
 };
 
-export default Write;
+export default Draft;

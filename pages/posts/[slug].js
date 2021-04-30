@@ -1,5 +1,7 @@
 import ReactMarkdown from 'react-markdown';
 import { useRouter } from 'next/router';
+import Link from 'next/link';
+import toast from 'react-hot-toast';
 import { faunaQueries } from '@/lib/fauna';
 import { Layout } from '@/sections/index';
 import { MDComponents } from '@/components/index';
@@ -16,19 +18,26 @@ const Post = ({
 
   const deletePost = async () => {
     if (window.confirm('Do you really want to delete this post?')) {
+      let toastId;
       try {
+        // Display loading state...
+        toastId = toast.loading('Deleting...');
+        // Perform query
         await faunaQueries.deletePost(id);
+        // Remove toast
+        toast.dismiss(toastId);
         // Redirect to home page
         router.push(`/`);
       } catch (error) {
-        console.error(error);
+        // Display error message
+        toast.error('Unable to delete post', { id: toastId });
       }
     }
   };
 
   return (
     <Layout>
-      <article className="max-w-screen-md mx-auto py-12 space-y-16">
+      <article className="max-w-screen-lg mx-auto py-12 space-y-16">
         <header className="space-y-8">
           <h1 className="max-w-screen-md lg:text-6xl md:text-5xl sm:text-4xl text-3xl w-full font-extrabold leading-tight">
             {title}
@@ -57,13 +66,12 @@ const Post = ({
 
             {/* Actions */}
             <div className="flex items-center space-x-2">
-              <button
-                type="button"
-                className="bg-transparent hover:bg-gray-200 dark:hover:bg-gray-800 rounded-md px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-opacity-50 flex items-center space-x-2"
-              >
-                <PencilIcon className="w-5 h-5 flex-shrink-0" />
-                <span>Edit</span>
-              </button>
+              <Link href={`/draft/${encodeURIComponent(id)}`}>
+                <a className="bg-transparent hover:bg-gray-200 dark:hover:bg-gray-800 rounded-md px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-opacity-50 flex items-center space-x-2">
+                  <PencilIcon className="w-5 h-5 flex-shrink-0" />
+                  <span>Edit</span>
+                </a>
+              </Link>
               <button
                 type="button"
                 onClick={deletePost}
