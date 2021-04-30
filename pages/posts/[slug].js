@@ -91,7 +91,7 @@ const Post = ({
           </div>
         </header>
 
-        <main className="prose sm:prose-lg lg:prose-xl dark:prose-dark dark:sm:prose-lg-dark dark:lg:prose-xl-dark max-w-none">
+        <main className="prose sm:prose-lg lg:prose-xl dark:prose-dark max-w-none">
           <ReactMarkdown components={MDComponents} children={content} />
         </main>
       </article>
@@ -105,7 +105,7 @@ export async function getStaticPaths() {
   return {
     paths:
       data
-        ?.filter(({ data: { slug } }) => Boolean(slug))
+        ?.filter(({ data: { published } }) => published)
         ?.map(({ data: { slug } }) => ({
           params: { slug },
         })) ?? [],

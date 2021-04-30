@@ -64,10 +64,17 @@ export default function Home({ posts = [] }) {
       {/* Blog posts section */}
       <section className="grid sm:grid-cols-2 gap-8 max-w-screen-lg mx-auto">
         {posts?.map(data => (
-          <Link key={data.id} href={`/posts/${encodeURIComponent(data?.slug)}`}>
+          <Link
+            key={data.id}
+            href={
+              data.published
+                ? `/posts/${encodeURIComponent(data?.slug)}`
+                : `/draft/${data.id}`
+            }
+          >
             <a className="rounded-md border dark:border-gray-700 dark:bg-gray-800 hover:shadow-xl transition-shadow p-6">
               <h3 className="text-3xl font-bold leading-snug tracking-tight mb-2">
-                {data.title}
+                {data?.title || 'Untitled'}
               </h3>
               {data?.author ? (
                 <div className="flex items-center space-x-2 mb-4">
@@ -79,17 +86,20 @@ export default function Home({ posts = [] }) {
                   <div className="text-sm">
                     <p className="font-semibold">{data.author?.name}</p>
                     <p className="text-gray-500">
-                      {data?.published_at &&
-                        new Intl.DateTimeFormat('en', {
-                          year: 'numeric',
-                          month: 'short',
-                          day: '2-digit',
-                        }).format(new Date(data.published_at))}
+                      {data?.published_at
+                        ? new Intl.DateTimeFormat('en', {
+                            year: 'numeric',
+                            month: 'short',
+                            day: '2-digit',
+                          }).format(new Date(data.published_at))
+                        : 'Not published'}
                     </p>
                   </div>
                 </div>
               ) : null}
-              <p className="text-gray-500">{data.content.slice(0, 250)}</p>
+              <p className="text-gray-500">
+                {data?.content?.slice(0, 250) || 'Nothing to preview...'}
+              </p>
             </a>
           </Link>
         ))}

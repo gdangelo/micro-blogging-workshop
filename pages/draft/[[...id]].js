@@ -3,13 +3,17 @@ import { useRouter } from 'next/router';
 import { useSession } from 'next-auth/client';
 import { faunaQueries } from '@/lib/fauna';
 import { Layout } from '@/sections/index';
+import useDebounce from '@/hooks/use-debounce';
 import ReactMarkdown from 'react-markdown';
 import toast from 'react-hot-toast';
 
 import {
+  CloudIcon,
   EyeIcon,
+  ExclamationCircleIcon,
   PencilIcon,
   LightningBoltIcon,
+  RefreshIcon,
 } from '@heroicons/react/outline';
 import { MarkdownIcon, MDComponents } from '@/components/index';
 
@@ -22,7 +26,7 @@ const pageMeta = {
   title: 'Write blog post',
 };
 
-const Draft = props => {
+const Draft = () => {
   const router = useRouter();
 
   const [session, loading] = useSession();
@@ -30,7 +34,13 @@ const Draft = props => {
   const [activeTab, setActiveTab] = useState(0);
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
+  const [published, setPublished] = useState(false);
   const [publishing, setPublishing] = useState(false);
+  const [savingStatus, setSavingStatus] = useState('idle');
+
+  // Debounced values
+  const debouncedTitle = useDebounce(title);
+  const debouncedContent = useDebounce(content);
 
   const id = router.query?.id?.[0] ?? '';
 
@@ -51,10 +61,12 @@ const Draft = props => {
           // Update state
           setTitle(data.title);
           setContent(data.content);
+          setPublished(data.published);
         } else {
           // Reset fields
           setTitle('');
           setContent('');
+          setPublished(false);
         }
       } catch (error) {
         // Display error message
@@ -64,30 +76,55 @@ const Draft = props => {
     getPost();
   }, [id]);
 
+  useEffect(() => {
+    const saveDraft = async () => {
+      // Abort!
+      if (!id && !debouncedTitle) return;
+
+      try {
+        setSavingStatus('loading');
+
+        if (id) {
+          // Automatic saving
+          await faunaQueries.updatePost(id, {
+            title: debouncedTitle,
+            content: debouncedContent,
+          });
+        } else {
+          // New post
+          const { ref } = await faunaQueries.createPost(
+            debouncedTitle,
+            debouncedContent,
+            session.user
+          );
+          // Update the path of the current page without rerunning
+          router.push(`/draft/${ref.value.id}`, undefined, { shallow: true });
+        }
+        setSavingStatus('idle');
+      } catch (error) {
+        setSavingStatus('failed');
+      }
+    };
+
+    if (!published) {
+      saveDraft();
+    }
+  }, [debouncedTitle, debouncedContent, published]);
+
   const publishPost = async () => {
     let toastId;
 
     try {
-      if (title && content) {
+      if (id && title) {
         // Start loading state...
         setPublishing(true);
         toastId = toast.loading('Publishing...');
         // Perform query
-        let slug;
-        if (id) {
-          const { data } = await faunaQueries.updatePost(id, {
-            title,
-            content,
-          });
-          slug = data.slug;
-        } else {
-          const { data } = await faunaQueries.createPost(
-            title,
-            content,
-            session.user
-          );
-          slug = data.slug;
-        }
+        const {
+          data: { slug },
+        } = published
+          ? await faunaQueries.updatePost(id, { title, content })
+          : await faunaQueries.publishPost(id);
         // Display success message
         toast.success('Redirecting...', { id: toastId });
         // Redirect to post page
@@ -106,6 +143,31 @@ const Draft = props => {
   return (
     <Layout pageMeta={pageMeta}>
       <div className="w-full max-w-screen-lg mx-auto pt-8 sm:pt-12">
+        {id ? (
+          <div className="flex justify-start items-center text-gray-500 mb-6">
+            <p className="flex items-center space-x-1 bg-gray-100 dark:bg-gray-800 rounded-md px-2 py-1">
+              {savingStatus === 'failed' ? (
+                <>
+                  <ExclamationCircleIcon className="w-6 h-6 flex-shrink-0 text-red-500 dark:text-red-400" />
+                  <span className="text-red-500 dark:text-red-400">
+                    Saving failed
+                  </span>
+                </>
+              ) : savingStatus === 'loading' ? (
+                <>
+                  <RefreshIcon className="w-6 h-6 flex-shrink-0 animate-spin" />
+                  <span>Saving</span>
+                </>
+              ) : (
+                <>
+                  <CloudIcon className="w-6 h-6 flex-shrink-0" />
+                  <span>Saved</span>
+                </>
+              )}
+            </p>
+          </div>
+        ) : null}
+
         {/* Blog post title */}
         <textarea
           value={title}
@@ -118,7 +180,7 @@ const Draft = props => {
         />
 
         {/* Action tabs */}
-        <div className="flex justify-center sm:justify-between items-center space-x-2 px-2 sm:px-4 py-2 mt-6 rounded bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-100 sticky top-0">
+        <div className="mt-6 flex justify-center sm:justify-between items-center space-x-2 px-2 sm:px-4 py-2 rounded bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-100 sticky top-0">
           <div className="flex items-center space-x-4">
             {tabs.map(({ text, icon: Icon }, i) => (
               <button
@@ -136,14 +198,16 @@ const Draft = props => {
               </button>
             ))}
 
-            <button
-              onClick={publishPost}
-              disabled={publishing}
-              className="flex items-center space-x-1 transition-colors rounded-md focus:outline-none hover:text-blue-600 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:text-current"
-            >
-              <LightningBoltIcon className="w-5 h-5 flex-shrink-0" />
-              <span>Publish</span>
-            </button>
+            {id ? (
+              <button
+                onClick={publishPost}
+                disabled={publishing}
+                className="flex items-center space-x-1 transition-colors rounded-md focus:outline-none hover:text-blue-600 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:text-current"
+              >
+                <LightningBoltIcon className="w-5 h-5 flex-shrink-0" />
+                <span>Publish</span>
+              </button>
+            ) : null}
           </div>
 
           <a
