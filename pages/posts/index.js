@@ -1,10 +1,13 @@
-import { useState, useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { faunaQueries } from '@/lib/fauna';
+import axios from 'axios';
+import { useSWRInfinite } from 'swr';
 import { useDebouncedCallback } from 'use-debounce';
 import { Layout } from '@/sections/index';
 import { CardSkeleton } from '@/components/index';
 import { ExclamationCircleIcon } from '@heroicons/react/outline';
+
+const fetcher = url => axios.get(url).then(res => res.data);
 
 function isInViewport(element) {
   if (!element) return false;
@@ -21,66 +24,36 @@ function isInViewport(element) {
 
 const Posts = () => {
   const moreRef = useRef();
-  const [posts, setPosts] = useState([]);
-  const [initializing, setInitializing] = useState(true);
-  const [after, setAfter] = useState(null);
-  const [loadingMore, setLoadingMore] = useState(false);
 
-  // Debounce callback
-  const loadMore = useDebouncedCallback(
-    async () => {
-      try {
-        setLoadingMore(true);
-        // Fetch the 10 most recent posts
-        const res = await faunaQueries.getPosts({
-          size: 10,
-          after,
-        });
-        // Serialize data by flattening the ref property
-        const newPosts = res?.data?.map(({ data, ref }) => ({
-          ...data,
-          id: ref.value.id,
-        }));
-        // Remove the first item
-        setPosts(old => [...old, ...newPosts]);
-        setAfter(res?.after);
-      } catch (error) {
-        // do nothing!
-      } finally {
-        setLoadingMore(false);
-      }
+  const { data: pages, error, size, setSize } = useSWRInfinite(
+    (pageIndex, previousPageData) => {
+      // reached the endpoint
+      if (previousPageData && !previousPageData.after) return null;
+
+      // first page, we don't have `previousPageData`
+      if (pageIndex === 0) return '/api/posts';
+
+      // add the cursor to the API endpoint
+      return `/api/posts?cursor=${encodeURIComponent(
+        JSON.stringify(previousPageData.after)
+      )}`;
     },
-    // delay in ms
-    500
+    fetcher
   );
 
-  useEffect(() => {
-    const getPosts = async () => {
-      try {
-        // Fetch the 10 most recent posts
-        const res = await faunaQueries.getPosts({
-          size: 10,
-        });
-        // Serialize data by flattening the ref property
-        const posts = res?.data?.map(({ data, ref }) => ({
-          ...data,
-          id: ref.value.id,
-        }));
-        setPosts(posts);
-        setAfter(res?.after);
-      } catch (error) {
-        setPosts([]);
-        setAfter(null);
-      } finally {
-        setInitializing(false);
-      }
-    };
-    getPosts();
-  }, []);
+  const posts = pages?.flatMap(page => page.data) ?? [];
+  const hasMore = pages?.[size - 1]?.after ?? null;
+  const isLoadingInitialData = !pages && !error;
+  const isLoadingMore =
+    isLoadingInitialData ||
+    (size > 0 && pages && typeof pages[size - 1] === 'undefined');
+
+  // Debounce callback
+  const loadMore = useDebouncedCallback(() => setSize(size => size + 1), 500);
 
   useEffect(() => {
     const runLoadMore = () => {
-      if (after && isInViewport(moreRef.current)) {
+      if (isInViewport(moreRef.current)) {
         loadMore();
       }
     };
@@ -90,7 +63,7 @@ const Posts = () => {
     return () => {
       window.removeEventListener('scroll', runLoadMore);
     };
-  }, [after]);
+  }, []);
 
   const renderSkeletons = () => {
     return (
@@ -116,51 +89,51 @@ const Posts = () => {
     return (
       <section>
         <div className="grid sm:grid-cols-2 gap-8 max-w-screen-lg mx-auto">
-          {posts?.map(data => (
+          {posts?.map(({ data: post, ref }) => (
             <Link
-              key={data.id}
+              key={ref.id}
               href={
-                data.published
-                  ? `/posts/${encodeURIComponent(data?.slug)}`
-                  : `/draft/${data.id}`
+                post.published
+                  ? `/posts/${encodeURIComponent(post?.slug)}`
+                  : `/draft/${ref.id}`
               }
             >
               <a className="rounded-md border dark:border-gray-700 dark:bg-gray-800 hover:shadow-xl transition-shadow p-6">
                 <h3 className="text-3xl font-bold leading-snug tracking-tight mb-2">
-                  {data?.title || 'Untitled'}
+                  {post?.title || 'Untitled'}
                 </h3>
-                {data?.author ? (
+                {post?.author ? (
                   <div className="flex items-center space-x-2 mb-4">
                     <img
-                      src={data.author?.image}
-                      alt={data.author?.name}
+                      src={post.author?.image}
+                      alt={post.author?.name}
                       className="border-2 border-blue-600 rounded-full w-12 h-12"
                     />
                     <div className="text-sm">
-                      <p className="font-semibold">{data.author?.name}</p>
+                      <p className="font-semibold">{post.author?.name}</p>
                       <p className="text-gray-500">
-                        {data?.published_at
+                        {post?.published_at
                           ? new Intl.DateTimeFormat('en', {
                               year: 'numeric',
                               month: 'short',
                               day: '2-digit',
-                            }).format(new Date(data.published_at))
+                            }).format(new Date(post.published_at))
                           : 'Not published'}
                       </p>
                     </div>
                   </div>
                 ) : null}
                 <p className="text-gray-500">
-                  {data?.content?.slice(0, 250) || 'Nothing to preview...'}
+                  {post?.content?.slice(0, 250) || 'Nothing to preview...'}
                 </p>
               </a>
             </Link>
           ))}
         </div>
 
-        <div className="mt-8">{loadingMore ? renderSkeletons() : null}</div>
+        <div className="mt-8">{isLoadingMore ? renderSkeletons() : null}</div>
 
-        {after ? (
+        {hasMore ? (
           <div ref={moreRef} />
         ) : (
           <p className="text-gray-500 text-center text-lg mt-20">
@@ -179,7 +152,7 @@ const Posts = () => {
         </h1>
       </section>
 
-      {initializing ? renderSkeletons() : renderPosts()}
+      {isLoadingInitialData ? renderSkeletons() : renderPosts()}
     </Layout>
   );
 };

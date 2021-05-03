@@ -17,7 +17,7 @@ const Edit = () => {
   const [initializing, setInitializing] = useState(false);
   const [publishing, setPublishing] = useState(false);
 
-  const id = router.query?.id?.[0] ?? '';
+  const id = router.query?.id ?? '';
 
   // Check if user is authentication
   useEffect(() => {

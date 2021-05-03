@@ -24,7 +24,7 @@ const Draft = () => {
   const [publishing, setPublishing] = useState(false);
   const [status, setStatus] = useState('saved');
 
-  const id = router.query?.id?.[0];
+  const id = router.query?.id ?? '';
 
   // Check if user is authenticated
   useEffect(() => {
