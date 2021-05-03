@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
-import { useSession } from 'next-auth/client';
+import useUser from '@/hooks/use-user';
 import { faunaQueries } from '@/lib/fauna';
 import { Layout } from '@/sections/index';
 import { Editor } from '@/components/index';
@@ -12,19 +12,13 @@ const pageMeta = {
 
 const Edit = () => {
   const router = useRouter();
-  const [session, loading] = useSession();
+  const { user, loading } = useUser();
+
   const [initialData, setInitialData] = useState(null);
   const [initializing, setInitializing] = useState(false);
   const [publishing, setPublishing] = useState(false);
 
   const id = router.query?.id ?? '';
-
-  // Check if user is authentication
-  useEffect(() => {
-    if (!(session || loading)) {
-      router.push('/api/auth/signin');
-    }
-  }, [session, loading]);
 
   // Retrieve data from post
   useEffect(() => {
@@ -74,7 +68,7 @@ const Edit = () => {
     }
   };
 
-  if (loading || !session) return null;
+  if (loading || !user) return null;
 
   return (
     <Layout pageMeta={pageMeta}>

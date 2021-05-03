@@ -1,7 +1,6 @@
-import { useEffect } from 'react';
 import { useRouter } from 'next/router';
-import { useSession } from 'next-auth/client';
 import { faunaQueries } from '@/lib/fauna';
+import useUser from '@/hooks/use-user';
 import { Layout } from '@/sections/index';
 import { Editor } from '@/components/index';
 import toast from 'react-hot-toast';
@@ -12,14 +11,7 @@ const pageMeta = {
 
 const Draft = () => {
   const router = useRouter();
-  const [session, loading] = useSession();
-
-  // Check if user is authenticated
-  useEffect(() => {
-    if (!(session || loading)) {
-      router.push('/api/auth/signin');
-    }
-  }, [session, loading]);
+  const { user, loading } = useUser(true);
 
   const handleOnChange = async (title, content) => {
     try {
@@ -27,7 +19,7 @@ const Draft = () => {
       const { ref } = await faunaQueries.createPost({
         title,
         content,
-        author: session.user,
+        author: user,
       });
       // Update the path of the current page
       router.push(`/draft/${ref.value.id}`);
@@ -36,7 +28,7 @@ const Draft = () => {
     }
   };
 
-  if (loading || !session) return null;
+  if (loading || !user) return null;
 
   return (
     <Layout pageMeta={pageMeta}>

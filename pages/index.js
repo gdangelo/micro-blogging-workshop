@@ -1,11 +1,12 @@
 import Link from 'next/link';
-import { signIn, useSession } from 'next-auth/client';
+import { signIn } from 'next-auth/client';
+import useUser from '@/hooks/use-user';
 
 import { BookOpenIcon, PencilIcon } from '@heroicons/react/outline';
 import { Layout } from '@/sections/index';
 
 export default function Home() {
-  const [session, loading] = useSession();
+  const { user, loading } = useUser();
 
   return (
     <Layout>
@@ -25,7 +26,7 @@ export default function Home() {
 
         {/* CTA */}
         <div className="flex items-center space-x-4">
-          {loading ? null : !session ? (
+          {loading ? null : !user ? (
             <button
               type="button"
               onClick={() => signIn()}
