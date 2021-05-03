@@ -5,6 +5,7 @@ import { useTheme } from 'next-themes';
 import { Logo, FlyoutMenu, MobileMenu, GithubIcon } from '@/components/index';
 import {
   ChevronDownIcon,
+  DocumentTextIcon,
   GlobeIcon,
   PlusCircleIcon,
 } from '@heroicons/react/outline';
@@ -14,12 +15,17 @@ const links = [
   {
     text: 'Write a new post',
     icon: PlusCircleIcon,
-    href: '/draft',
+    href: '/new',
   },
   {
     text: 'My posts',
     icon: GlobeIcon,
-    href: '/posts',
+    href: '/posts/me',
+  },
+  {
+    text: 'My drafts',
+    icon: DocumentTextIcon,
+    href: '/drafts/me',
   },
 ];
 
@@ -88,22 +94,24 @@ const Header = () => {
                   Sign in
                 </button>
               ) : (
-                <div
-                  className="relative flex items-center space-x-1 sm:space-x-2"
-                  role="button"
-                  onClick={() => setMenuOpen(prev => !prev)}
-                >
-                  <img
-                    src={session.user.image}
-                    alt={session.user.name}
-                    className="rounded-full border-2 border-blue-600 w-8 h-8"
-                  />
-                  <p className="flex items-center sm:space-x-1">
-                    <span className="hidden sm:inline-block">
-                      Hello, {session.user.name?.split(' ')?.[0] ?? 'there'}
-                    </span>{' '}
-                    <ChevronDownIcon className="w-4 h-4 flex-shrink-0 mt-1" />
-                  </p>
+                <div className="relative">
+                  <div
+                    className="flex items-center space-x-1 sm:space-x-2"
+                    role="button"
+                    onClick={() => setMenuOpen(prev => !prev)}
+                  >
+                    <img
+                      src={session.user.image}
+                      alt={session.user.name}
+                      className="rounded-full border-2 border-blue-600 w-8 h-8"
+                    />
+                    <p className="flex items-center sm:space-x-1">
+                      <span className="hidden sm:inline-block">
+                        Hello, {session.user.name?.split(' ')?.[0] ?? 'there'}
+                      </span>{' '}
+                      <ChevronDownIcon className="w-4 h-4 flex-shrink-0 mt-1" />
+                    </p>
+                  </div>
 
                   <FlyoutMenu
                     links={links}

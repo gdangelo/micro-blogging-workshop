@@ -60,7 +60,7 @@ const FlyoutMenu = ({ links = [], show = false, onClose = () => null }) => {
         </div>
 
         {/* Sign out */}
-        <div className="p-5">
+        <div className="px-5 py-3">
           <button
             type="button"
             onClick={() => signOut()}

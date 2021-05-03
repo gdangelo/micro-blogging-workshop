@@ -1,0 +1,124 @@
+import { useState, useEffect, useRef } from 'react';
+import useDebounce from '@/hooks/use-debounce';
+import ReactMarkdown from 'react-markdown';
+
+import {
+  EyeIcon,
+  PencilIcon,
+  LightningBoltIcon,
+} from '@heroicons/react/outline';
+import { MarkdownIcon, MDComponents } from '@/components/index';
+
+const tabs = [
+  { text: 'Write', icon: PencilIcon },
+  { text: 'Preview', icon: EyeIcon },
+];
+
+const Editor = ({
+  initialData = null,
+  showPublishButton = false,
+  disabled = false,
+  onChange = () => null,
+  onPublish = () => null,
+}) => {
+  const [activeTab, setActiveTab] = useState(0);
+  const [title, setTitle] = useState(initialData?.title ?? '');
+  const [content, setContent] = useState(initialData?.content ?? '');
+
+  // Debounced values - for auto save
+  const debouncedTitle = useDebounce(title, 500);
+  const debouncedContent = useDebounce(content, 500);
+
+  // Use to keep track of initial render
+  const initialRender = useRef(true);
+
+  useEffect(() => {
+    // Don't run on initial render
+    if (initialRender.current) {
+      initialRender.current = false;
+      return;
+    }
+    // Pass debounced values
+    onChange(debouncedTitle, debouncedContent);
+  }, [debouncedTitle, debouncedContent]);
+
+  return (
+    <div className="w-full max-w-screen-lg mx-auto">
+      {/* Blog post title */}
+      <textarea
+        value={title}
+        onChange={e => setTitle(e.target.value)}
+        maxLength="150"
+        placeholder="Title…"
+        disabled={disabled}
+        autoFocus
+        className="w-full text-3xl font-bold leading-snug bg-transparent outline-none appearance-none resize-none disabled:cursor-not-allowed"
+      />
+
+      {/* Action tabs */}
+      <div className="mt-6 flex justify-center sm:justify-between items-center space-x-2 px-2 sm:px-4 py-2 rounded bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-100 sticky top-0">
+        <div className="flex items-center space-x-4">
+          {tabs.map(({ text, icon: Icon }, i) => (
+            <button
+              key={text}
+              onClick={() => setActiveTab(i)}
+              disabled={disabled}
+              className={`flex items-center space-x-1 transition-colors rounded-md focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed ${
+                activeTab === i
+                  ? 'text-blue-600 cursor-default select-none disabled:hover:text-blue-600'
+                  : 'hover:text-blue-600 disabled:hover:text-current'
+              }`}
+            >
+              <Icon className="w-5 h-5 flex-shrink-0" />
+              <span>{text}</span>
+            </button>
+          ))}
+
+          {showPublishButton ? (
+            <button
+              onClick={() => onPublish(title, content)}
+              disabled={disabled}
+              className="flex items-center space-x-1 transition-colors rounded-md focus:outline-none hover:text-blue-600 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:text-current"
+            >
+              <LightningBoltIcon className="w-5 h-5 flex-shrink-0" />
+              <span>Publish</span>
+            </button>
+          ) : null}
+        </div>
+
+        <a
+          href="https://daringfireball.net/projects/markdown/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="hidden sm:flex items-center space-x-1 hover:text-blue-600"
+        >
+          <MarkdownIcon className="w-5 h-5 flex-shrink-0" />
+          <span className="hidden sm:inline-block">Mardown supported</span>
+        </a>
+      </div>
+
+      {/* Blog post content */}
+      <div className="px-4 py-12">
+        {activeTab === 0 ? (
+          <textarea
+            value={content}
+            onChange={e => setContent(e.target.value)}
+            placeholder="Tell your story..."
+            disabled={disabled}
+            className="w-full min-h-screen resize-none bg-transparent focus:outline-none text-xl leading-snug disabled:cursor-not-allowed"
+          />
+        ) : (
+          <article className="prose dark:prose-dark sm:prose-lg lg:prose-xl max-w-none min-h-screen">
+            {content ? (
+              <ReactMarkdown components={MDComponents} children={content} />
+            ) : (
+              <p>Nothing to preview yet...</p>
+            )}
+          </article>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default Editor;
