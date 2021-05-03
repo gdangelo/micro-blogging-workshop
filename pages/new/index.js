@@ -41,7 +41,7 @@ const Draft = () => {
   return (
     <Layout pageMeta={pageMeta}>
       <div className="w-full max-w-screen-lg mx-auto py-8 sm:py-12">
-        <Editor initialData={null} onChange={handleOnChange} />
+        <Editor debouncedDelay={1500} onChange={handleOnChange} />
       </div>
     </Layout>
   );

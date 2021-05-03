@@ -1,15 +1,58 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { faunaQueries } from '@/lib/fauna';
+import { useDebouncedCallback } from 'use-debounce';
 import { Layout } from '@/sections/index';
 import { CardSkeleton } from '@/components/index';
 import { ExclamationCircleIcon } from '@heroicons/react/outline';
 
+function isInViewport(element) {
+  if (!element) return false;
+
+  const rect = element.getBoundingClientRect();
+  return (
+    rect.top >= 0 &&
+    rect.left >= 0 &&
+    rect.bottom <=
+      (window.innerHeight || document.documentElement.clientHeight) &&
+    rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+  );
+}
+
 const Posts = () => {
+  const moreRef = useRef();
   const [posts, setPosts] = useState([]);
   const [initializing, setInitializing] = useState(true);
   const [after, setAfter] = useState(null);
   const [loadingMore, setLoadingMore] = useState(false);
+
+  // Debounce callback
+  const loadMore = useDebouncedCallback(
+    async () => {
+      try {
+        setLoadingMore(true);
+        // Fetch the 10 most recent posts
+        const res = await faunaQueries.getPosts({
+          size: 10,
+          after,
+        });
+        // Serialize data by flattening the ref property
+        const newPosts = res?.data?.map(({ data, ref }) => ({
+          ...data,
+          id: ref.value.id,
+        }));
+        // Remove the first item
+        setPosts(old => [...old, ...newPosts]);
+        setAfter(res?.after);
+      } catch (error) {
+        // do nothing!
+      } finally {
+        setLoadingMore(false);
+      }
+    },
+    // delay in ms
+    500
+  );
 
   useEffect(() => {
     const getPosts = async () => {
@@ -35,28 +78,19 @@ const Posts = () => {
     getPosts();
   }, []);
 
-  const loadMore = async () => {
-    try {
-      setLoadingMore(true);
-      // Fetch the 10 most recent posts
-      const res = await faunaQueries.getPosts({
-        size: 10,
-        after,
-      });
-      // Serialize data by flattening the ref property
-      const newPosts = res?.data?.map(({ data, ref }) => ({
-        ...data,
-        id: ref.value.id,
-      }));
-      // Remove the first item
-      setPosts(old => [...old, ...newPosts]);
-      setAfter(res?.after);
-    } catch (error) {
-      // do nothing!
-    } finally {
-      setLoadingMore(false);
-    }
-  };
+  useEffect(() => {
+    const runLoadMore = () => {
+      if (after && isInViewport(moreRef.current)) {
+        loadMore();
+      }
+    };
+
+    window.addEventListener('scroll', runLoadMore);
+
+    return () => {
+      window.removeEventListener('scroll', runLoadMore);
+    };
+  }, [after]);
 
   const renderSkeletons = () => {
     return (
@@ -127,16 +161,7 @@ const Posts = () => {
         <div className="mt-8">{loadingMore ? renderSkeletons() : null}</div>
 
         {after ? (
-          <div className="flex justify-center mt-20">
-            <button
-              type="button"
-              onClick={loadMore}
-              disabled={loadingMore}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md border-2 border-blue-600 hover:border-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-600 focus:ring-opacity-50 whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {loadingMore ? 'Loading...' : 'Load more'}
-            </button>
-          </div>
+          <div ref={moreRef} />
         ) : (
           <p className="text-gray-500 text-center text-lg mt-20">
             No more posts...

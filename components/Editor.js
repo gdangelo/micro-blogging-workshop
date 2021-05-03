@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import useDebounce from '@/hooks/use-debounce';
+import { useDebounce } from 'use-debounce';
 import ReactMarkdown from 'react-markdown';
 
 import {
@@ -18,6 +18,7 @@ const Editor = ({
   initialData = null,
   showPublishButton = false,
   disabled = false,
+  debouncedDelay = 500,
   onChange = () => null,
   onPublish = () => null,
 }) => {
@@ -26,8 +27,8 @@ const Editor = ({
   const [content, setContent] = useState(initialData?.content ?? '');
 
   // Debounced values - for auto save
-  const debouncedTitle = useDebounce(title, 500);
-  const debouncedContent = useDebounce(content, 500);
+  const [debouncedTitle] = useDebounce(title, debouncedDelay);
+  const [debouncedContent] = useDebounce(content, debouncedDelay);
 
   // Use to keep track of initial render
   const initialRender = useRef(true);
