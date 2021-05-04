@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useSession, signIn } from 'next-auth/client';
 import { useTheme } from 'next-themes';
 
@@ -30,6 +30,8 @@ const links = [
 ];
 
 const Header = () => {
+  const menuRef = useRef();
+
   const [session, loading] = useSession();
   const { theme, setTheme } = useTheme();
 
@@ -94,7 +96,7 @@ const Header = () => {
                   Sign in
                 </button>
               ) : (
-                <div className="relative">
+                <div className="relative" ref={menuRef}>
                   <div
                     className="flex items-center space-x-1 sm:space-x-2"
                     role="button"
@@ -116,6 +118,7 @@ const Header = () => {
                   <FlyoutMenu
                     links={links}
                     show={isLargeScreen && menuOpen}
+                    containerRef={menuRef}
                     onClose={() => setMenuOpen(false)}
                   />
                 </div>
