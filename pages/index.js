@@ -25,7 +25,7 @@ export default function Home() {
         </div>
 
         {/* CTA */}
-        <div className="flex items-center space-x-4">
+        <div className="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-4">
           {loading ? null : !user ? (
             <button
               type="button"
@@ -36,7 +36,7 @@ export default function Home() {
             </button>
           ) : (
             <Link href="/new">
-              <a className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-md border-2 border-blue-600 hover:border-blue-700 text-lg sm:text-xl focus:outline-none focus:ring-4 focus:ring-blue-600 focus:ring-opacity-50 whitespace-nowrap flex items-center space-x-2">
+              <a className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-md border-2 border-blue-600 hover:border-blue-700 text-lg sm:text-xl focus:outline-none focus:ring-4 focus:ring-blue-600 focus:ring-opacity-50 whitespace-nowrap flex justify-center items-center space-x-2">
                 <PencilIcon className="w-6 h-6 flex-shrink-0" />
                 <span>Write a blog post</span>
               </a>
@@ -44,7 +44,7 @@ export default function Home() {
           )}
 
           <Link href="/posts">
-            <a className="bg-transparent text-blue-600 px-6 py-3 rounded-md text-lg sm:text-xl border-2 border-blue-600 focus:outline-none whitespace-nowrap flex items-center space-x-2">
+            <a className="w-full bg-transparent text-blue-600 px-6 py-3 rounded-md text-lg sm:text-xl border-2 border-blue-600 focus:outline-none whitespace-nowrap flex justify-center items-center space-x-2">
               <BookOpenIcon className="w-6 h-6 flex-shrink-0" />
               <span>Read the blog</span>
             </a>

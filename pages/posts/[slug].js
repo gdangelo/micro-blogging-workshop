@@ -2,6 +2,7 @@ import ReactMarkdown from 'react-markdown';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import toast from 'react-hot-toast';
+import axios from 'axios';
 import { faunaQueries } from '@/lib/fauna';
 import { Layout } from '@/sections/index';
 import { MDComponents } from '@/components/index';
@@ -23,11 +24,11 @@ const Post = ({
         // Display loading state...
         toastId = toast.loading('Deleting...');
         // Perform query
-        await faunaQueries.deletePost(id);
+        await axios.delete(`/api/posts/${id}`);
         // Remove toast
         toast.dismiss(toastId);
         // Redirect to home page
-        router.push(`/`);
+        router.push(`/posts`);
       } catch (error) {
         // Display error message
         toast.error('Unable to delete post', { id: toastId });
@@ -100,24 +101,26 @@ const Post = ({
 };
 
 export async function getStaticPaths() {
-  const { data } = await faunaQueries.getPosts();
+  let slugs = [],
+    cursor = null;
+
+  do {
+    const { data, after } = await faunaQueries.getAllSlugs({ after: cursor });
+    cursor = after;
+    slugs = [...slugs, ...data];
+  } while (cursor);
 
   return {
     paths:
-      data
-        ?.filter(({ data: { published } }) => published)
-        ?.map(({ data: { slug } }) => ({
-          params: { slug },
-        })) ?? [],
+      slugs?.map(slug => ({
+        params: { slug },
+      })) ?? [],
     fallback: false,
   };
 }
 
 export async function getStaticProps({ params }) {
-  const res = await faunaQueries.getPostBySlug(params.slug);
-
-  // Serialize data by flattening the ref property
-  const data = { id: res.ref.value.id, ...res.data };
+  const data = await faunaQueries.getPostBySlug(params.slug);
 
   return { props: data };
 }
