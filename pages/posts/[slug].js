@@ -1,5 +1,6 @@
 import ReactMarkdown from 'react-markdown';
 import { useRouter } from 'next/router';
+import { useSession } from 'next-auth/client';
 import Link from 'next/link';
 import toast from 'react-hot-toast';
 import axios from 'axios';
@@ -16,6 +17,7 @@ const Post = ({
   published_at = '',
 }) => {
   const router = useRouter();
+  const [session] = useSession();
 
   const deletePost = async () => {
     if (window.confirm('Do you really want to delete this post?')) {
@@ -73,22 +75,24 @@ const Post = ({
             </div>
 
             {/* Actions */}
-            <div className="flex items-center space-x-1">
-              <Link href={`/edit/${encodeURIComponent(id)}`}>
-                <a className="bg-transparent hover:bg-gray-200 dark:hover:bg-gray-800 rounded-md px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-opacity-50 flex items-center space-x-1">
-                  <PencilIcon className="w-5 h-5 flex-shrink-0" />
-                  <span>Edit</span>
-                </a>
-              </Link>
-              <button
-                type="button"
-                onClick={deletePost}
-                className="bg-transparent hover:bg-gray-200 dark:hover:bg-gray-800 rounded-md px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-opacity-50 flex items-center space-x-1"
-              >
-                <TrashIcon className="w-5 h-5 flex-shrink-0" />
-                <span>Delete</span>
-              </button>
-            </div>
+            {session && session.user.email === author.email ? (
+              <div className="flex items-center space-x-1">
+                <Link href={`/edit/${encodeURIComponent(id)}`}>
+                  <a className="bg-transparent hover:bg-gray-200 dark:hover:bg-gray-800 rounded-md px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-opacity-50 flex items-center space-x-1">
+                    <PencilIcon className="w-5 h-5 flex-shrink-0" />
+                    <span>Edit</span>
+                  </a>
+                </Link>
+                <button
+                  type="button"
+                  onClick={deletePost}
+                  className="bg-transparent hover:bg-gray-200 dark:hover:bg-gray-800 rounded-md px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-opacity-50 flex items-center space-x-1"
+                >
+                  <TrashIcon className="w-5 h-5 flex-shrink-0" />
+                  <span>Delete</span>
+                </button>
+              </div>
+            ) : null}
           </div>
         </header>
 

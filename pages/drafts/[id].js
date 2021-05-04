@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 import { useSession } from 'next-auth/client';
 import useSWR from 'swr';
 import axios from 'axios';
-import { fetcher, protectRoute } from '@/lib/util';
+import { fetcher, isAuthorized } from '@/lib/util';
 import { Layout } from '@/sections/index';
 import { Editor } from '@/components/index';
 import toast from 'react-hot-toast';
@@ -145,6 +145,6 @@ const Draft = () => {
   );
 };
 
-export const getServerSideProps = protectRoute;
+export const getServerSideProps = isAuthorized;
 
 export default Draft;
