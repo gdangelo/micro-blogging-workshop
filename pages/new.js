@@ -34,7 +34,7 @@ const NewDraft = () => {
       }}
     >
       <div className="w-full max-w-screen-lg mx-auto py-8 sm:py-12">
-        <Editor onChange={handleOnChange} />
+        <Editor onChange={handleOnChange} showDeleteButton={false} />
       </div>
     </Layout>
   );

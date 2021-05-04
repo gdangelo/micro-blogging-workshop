@@ -22,7 +22,7 @@ const Draft = () => {
     fetcher
   );
   const [publishing, setPublishing] = useState(false);
-  const [status, setStatus] = useState('saved');
+  const [savingStatus, setSavingStatus] = useState('saved');
 
   const handleOnPublish = async (title, content) => {
     let toastId;
@@ -57,7 +57,7 @@ const Draft = () => {
   const handleOnChange = async (title, content) => {
     // Saved data
     try {
-      setStatus('saving');
+      setSavingStatus('saving');
       // Perform query
       const { data } = await axios.patch(`/api/posts/${router?.query?.id}`, {
         title,
@@ -66,35 +66,63 @@ const Draft = () => {
       });
       // Update cache, but disable the revalidation
       mutate(data, false);
-      setStatus('saved');
+      setSavingStatus('saved');
     } catch (error) {
-      setStatus('error');
+      setSavingStatus('error');
+    }
+  };
+
+  const handleOnDelete = async () => {
+    if (window.confirm('Do you really want to delete this draft?')) {
+      let toastId;
+      try {
+        // Display loading state...
+        toastId = toast.loading('Deleting...');
+        // Perform query
+        await axios.delete(`/api/posts/${data.id}`);
+        // Remove toast
+        toast.dismiss(toastId);
+        // Redirect
+        router.push(`/drafts/me`);
+      } catch (error) {
+        // Display error message
+        toast.error('Unable to delete this draft', { id: toastId });
+      }
     }
   };
 
   if (error) {
-    toast.error('Unable to retrieve post');
+    return (
+      <Layout pageMeta={{ title: 'Error' }}>
+        <div className="flex justify-center my-12">
+          <p className="bg-gray-100 dark:bg-gray-800 p-4 rounded-md w-full max-w-screen-sm text-center text-lg flex justify-center items-center space-x-1 text-red-500">
+            <ExclamationCircleIcon className="w-6 h-6 flex-shrink-0" />
+            <span>Unable to retrieve post!</span>
+          </p>
+        </div>
+      </Layout>
+    );
   }
 
   return (
     <Layout pageMeta={{ title: 'Write blog post' }}>
       {data ? (
         <div className="w-full max-w-screen-lg mx-auto py-8 sm:py-12">
-          <div className="flex justify-start items-center mb-6">
+          <div className="flex justify-start items-center space-x-4 mb-6">
             <p className="flex items-center space-x-1 text-gray-500 bg-gray-100 dark:bg-gray-800 rounded-md px-2 py-1">
-              {status === 'error' ? (
+              {savingStatus === 'error' ? (
                 <>
                   <ExclamationCircleIcon className="w-6 h-6 flex-shrink-0 text-red-500 dark:text-red-400" />
                   <span className="text-red-500 dark:text-red-400">
                     Saving failed
                   </span>
                 </>
-              ) : status === 'saving' ? (
+              ) : savingStatus === 'saving' ? (
                 <>
                   <RefreshIcon className="w-6 h-6 flex-shrink-0 animate-spin" />
                   <span>Saving</span>
                 </>
-              ) : status === 'saved' ? (
+              ) : savingStatus === 'saved' ? (
                 <>
                   <CloudIcon className="w-6 h-6 flex-shrink-0" />
                   <span>Saved</span>
@@ -109,6 +137,7 @@ const Draft = () => {
             disabled={publishing}
             onChange={handleOnChange}
             onPublish={handleOnPublish}
+            onDelete={handleOnDelete}
           />
         </div>
       ) : null}

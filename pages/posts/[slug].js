@@ -27,7 +27,7 @@ const Post = ({
         await axios.delete(`/api/posts/${id}`);
         // Remove toast
         toast.dismiss(toastId);
-        // Redirect to home page
+        // Redirect
         router.push(`/posts`);
       } catch (error) {
         // Display error message

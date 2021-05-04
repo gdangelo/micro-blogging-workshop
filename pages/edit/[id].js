@@ -47,8 +47,36 @@ const Edit = () => {
     }
   };
 
+  const handleOnDelete = async () => {
+    if (window.confirm('Do you really want to delete this post?')) {
+      let toastId;
+      try {
+        // Display loading state...
+        toastId = toast.loading('Deleting...');
+        // Perform query
+        await axios.delete(`/api/posts/${data.id}`);
+        // Remove toast
+        toast.dismiss(toastId);
+        // Redirect
+        router.push(`/posts/me`);
+      } catch (error) {
+        // Display error message
+        toast.error('Unable to delete this post', { id: toastId });
+      }
+    }
+  };
+
   if (error) {
-    toast.error('Unable to retrieve post');
+    return (
+      <Layout pageMeta={{ title: 'Error' }}>
+        <div className="flex justify-center my-12">
+          <p className="bg-gray-100 dark:bg-gray-800 p-4 rounded-md w-full max-w-screen-sm text-center text-lg flex justify-center items-center space-x-1 text-red-500">
+            <ExclamationCircleIcon className="w-6 h-6 flex-shrink-0" />
+            <span>Unable to retrieve post!</span>
+          </p>
+        </div>
+      </Layout>
+    );
   }
 
   return (
@@ -60,6 +88,7 @@ const Edit = () => {
             showPublishButton={true}
             disabled={publishing}
             onPublish={handleOnPublish}
+            onDelete={handleOnDelete}
           />
         ) : null}
       </div>
