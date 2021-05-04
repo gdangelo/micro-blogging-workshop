@@ -1,13 +1,14 @@
-import useUser from '@/hooks/use-user';
+import { useSession } from 'next-auth/client';
+import { protectRoute } from '@/lib/util';
 import { Layout } from '@/sections/index';
 import { InfiniteDataList } from '@/components/index';
 
 const MyPosts = () => {
-  const { user, loading } = useUser();
+  const [session, loading] = useSession();
 
-  if (loading || !user) return null;
-
-  const queryKey = user ? `/api/posts?author=${user.email}` : '/api/posts';
+  const queryKey = session?.user
+    ? `/api/posts?author=${session.user.email}`
+    : '/api/posts';
 
   return (
     <Layout pageMeta={{ title: 'My posts' }}>
@@ -15,9 +16,11 @@ const MyPosts = () => {
         <h1 className="text-4xl sm:text-7xl font-bold capitalize">My posts</h1>
       </section>
 
-      <InfiniteDataList queryKey={queryKey} />
+      {!loading ? <InfiniteDataList queryKey={queryKey} /> : null}
     </Layout>
   );
 };
+
+export const getServerSideProps = protectRoute;
 
 export default MyPosts;

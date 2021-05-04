@@ -1,13 +1,14 @@
 import { useRouter } from 'next/router';
+import { useSession } from 'next-auth/client';
 import axios from 'axios';
-import useUser from '@/hooks/use-user';
+import { protectRoute } from '@/lib/util';
 import { Layout } from '@/sections/index';
 import { Editor } from '@/components/index';
 import toast from 'react-hot-toast';
 
-const Drafts = () => {
+const NewDraft = () => {
   const router = useRouter();
-  const { user, loading } = useUser(true);
+  const [session] = useSession();
 
   const handleOnChange = async (title, content) => {
     try {
@@ -17,7 +18,7 @@ const Drafts = () => {
       } = await axios.post('/api/posts', {
         title,
         content,
-        author: user,
+        author: session.user,
       });
       // Update the path of the current page
       router.push(`/drafts/${id}`);
@@ -25,8 +26,6 @@ const Drafts = () => {
       toast.error('Unable to create post');
     }
   };
-
-  if (loading || !user) return null;
 
   return (
     <Layout
@@ -41,4 +40,6 @@ const Drafts = () => {
   );
 };
 
-export default Drafts;
+export const getServerSideProps = protectRoute;
+
+export default NewDraft;

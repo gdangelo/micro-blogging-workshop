@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
-import { signIn } from 'next-auth/client';
+import { useSession, signIn } from 'next-auth/client';
 import { useTheme } from 'next-themes';
-import useUser from '@/hooks/use-user';
 
 import { Logo, FlyoutMenu, MobileMenu, GithubIcon } from '@/components/index';
 import {
@@ -31,7 +30,7 @@ const links = [
 ];
 
 const Header = () => {
-  const { user, loading } = useUser();
+  const [session, loading] = useSession();
   const { theme, setTheme } = useTheme();
 
   const [menuOpen, setMenuOpen] = useState(false);
@@ -86,7 +85,7 @@ const Header = () => {
           {!loading ? (
             <div>
               {/* Sign in */}
-              {!user ? (
+              {!session?.user ? (
                 <button
                   type="button"
                   onClick={() => signIn()}
@@ -102,13 +101,13 @@ const Header = () => {
                     onClick={() => setMenuOpen(prev => !prev)}
                   >
                     <img
-                      src={user.image}
-                      alt={user.name}
+                      src={session.user.image}
+                      alt={session.user.name}
                       className="rounded-full border-2 border-blue-600 w-8 h-8"
                     />
                     <p className="flex items-center sm:space-x-1">
                       <span className="hidden sm:inline-block">
-                        Hello, {user.name?.split(' ')?.[0] ?? 'there'}
+                        Hello, {session.user.name?.split(' ')?.[0] ?? 'there'}
                       </span>{' '}
                       <ChevronDownIcon className="w-4 h-4 flex-shrink-0 mt-1" />
                     </p>

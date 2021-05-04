@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { useRouter } from 'next/router';
-import useUser from '@/hooks/use-user';
+import { useSession } from 'next-auth/client';
 import useSWR from 'swr';
 import axios from 'axios';
-import { fetcher } from '@/lib/util';
+import { fetcher, protectRoute } from '@/lib/util';
 import { Layout } from '@/sections/index';
 import { Editor } from '@/components/index';
 import toast from 'react-hot-toast';
@@ -16,9 +16,9 @@ import {
 
 const Draft = () => {
   const router = useRouter();
-  const { user, loading } = useUser();
+  const [session] = useSession();
   const { data, error, mutate } = useSWR(
-    () => (user ? `/api/posts/${router?.query?.id}` : null),
+    () => (session?.user ? `/api/posts/${router?.query?.id}` : null),
     fetcher
   );
   const [publishing, setPublishing] = useState(false);
@@ -62,7 +62,7 @@ const Draft = () => {
       const { data } = await axios.patch(`/api/posts/${router?.query?.id}`, {
         title,
         content,
-        author: user,
+        author: session.user,
       });
       // Update cache, but disable the revalidation
       mutate(data, false);
@@ -71,8 +71,6 @@ const Draft = () => {
       setStatus('error');
     }
   };
-
-  if (loading || !user) return null;
 
   if (error) {
     toast.error('Unable to retrieve post');
@@ -117,5 +115,7 @@ const Draft = () => {
     </Layout>
   );
 };
+
+export const getServerSideProps = protectRoute;
 
 export default Draft;

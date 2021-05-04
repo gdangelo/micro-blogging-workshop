@@ -1,18 +1,18 @@
 import { useState } from 'react';
 import { useRouter } from 'next/router';
-import useUser from '@/hooks/use-user';
+import { useSession } from 'next-auth/client';
 import useSWR from 'swr';
 import axios from 'axios';
-import { fetcher } from '@/lib/util';
+import { fetcher, protectRoute } from '@/lib/util';
 import { Layout } from '@/sections/index';
 import { Editor } from '@/components/index';
 import toast from 'react-hot-toast';
 
 const Edit = () => {
   const router = useRouter();
-  const { user, loading } = useUser();
+  const [session] = useSession();
   const { data, error, mutate } = useSWR(
-    () => (user ? `/api/posts/${router?.query?.id}` : null),
+    () => (session?.user ? `/api/posts/${router?.query?.id}` : null),
     fetcher
   );
   const [publishing, setPublishing] = useState(false);
@@ -47,8 +47,6 @@ const Edit = () => {
     }
   };
 
-  if (loading || !user) return null;
-
   if (error) {
     toast.error('Unable to retrieve post');
   }
@@ -68,5 +66,7 @@ const Edit = () => {
     </Layout>
   );
 };
+
+export const getServerSideProps = protectRoute;
 
 export default Edit;
