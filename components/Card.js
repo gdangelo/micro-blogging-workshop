@@ -11,7 +11,7 @@ const Card = props => (
     }
   >
     <a className="rounded-md border dark:border-gray-700 dark:bg-gray-800 hover:shadow-xl transition-shadow p-6">
-      <h3 className="text-3xl font-bold leading-snug tracking-tight mb-2">
+      <h3 className="text-3xl font-bold leading-snug tracking-tight mb-2 truncate">
         {props?.title || 'Untitled'}
       </h3>
       {props?.author ? (

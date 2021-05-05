@@ -5,6 +5,7 @@ import Link from 'next/link';
 import toast from 'react-hot-toast';
 import axios from 'axios';
 import { faunaQueries } from '@/lib/fauna';
+import { formatDate } from '@/lib/utils';
 import { Layout } from '@/sections/index';
 import { MDComponents } from '@/components/index';
 import { PencilIcon, TrashIcon } from '@heroicons/react/outline';
@@ -66,14 +67,7 @@ const Post = ({
                 />
                 <div>
                   <p className="font-semibold">{author?.name}</p>
-                  <p className="text-gray-500">
-                    {published_at &&
-                      new Intl.DateTimeFormat('en', {
-                        year: 'numeric',
-                        month: 'short',
-                        day: '2-digit',
-                      }).format(new Date(published_at))}
-                  </p>
+                  <p className="text-gray-500">{formatDate(published_at)}</p>
                 </div>
               </div>
 
