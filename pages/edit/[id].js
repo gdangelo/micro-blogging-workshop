@@ -86,6 +86,7 @@ const Edit = () => {
         {data ? (
           <Editor
             initialData={data}
+            showDeleteButton={true}
             showPublishButton={true}
             disabled={publishing}
             onPublish={handleOnPublish}

@@ -73,7 +73,7 @@ const Editor = ({
                   : 'hover:text-blue-600 disabled:hover:text-current'
               }`}
             >
-              <Icon className="w-5 h-5 flex-shrink-0" />
+              <Icon className="w-6 h-6  flex-shrink-0" />
               <span className="hidden sm:inline-block">{text}</span>
             </button>
           ))}
@@ -84,7 +84,7 @@ const Editor = ({
               disabled={disabled}
               className="flex items-center space-x-1 transition-colors rounded-md focus:outline-none hover:text-blue-600 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:text-current"
             >
-              <CloudUploadIcon className="w-5 h-5 flex-shrink-0" />
+              <CloudUploadIcon className="w-6 h-6 flex-shrink-0" />
               <span className="hidden sm:inline-block">Publish</span>
             </button>
           ) : null}
@@ -95,7 +95,7 @@ const Editor = ({
               disabled={disabled}
               className="flex items-center space-x-1 transition-colors rounded-md focus:outline-none hover:text-blue-600 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:text-current"
             >
-              <TrashIcon className="w-5 h-5 flex-shrink-0" />
+              <TrashIcon className="w-6 h-6 flex-shrink-0" />
               <span className="hidden sm:inline-block">Delete</span>
             </button>
           ) : null}
@@ -107,7 +107,7 @@ const Editor = ({
           rel="noopener noreferrer"
           className="hidden sm:flex items-center space-x-1 hover:text-blue-600"
         >
-          <MarkdownIcon className="w-5 h-5 flex-shrink-0" />
+          <MarkdownIcon className="w-6 h-6  flex-shrink-0" />
           <span className="hidden sm:inline-block">Mardown supported</span>
         </a>
       </div>

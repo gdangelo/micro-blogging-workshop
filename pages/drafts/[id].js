@@ -133,6 +133,7 @@ const Draft = () => {
 
           <Editor
             initialData={data}
+            showDeleteButton={true}
             showPublishButton={true}
             disabled={publishing}
             onChange={handleOnChange}
