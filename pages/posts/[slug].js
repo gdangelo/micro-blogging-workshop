@@ -115,18 +115,26 @@ export async function getStaticPaths() {
   } while (cursor);
 
   return {
+    // Existing posts are rendered to HTML at build time
     paths:
       slugs?.map(slug => ({
         params: { slug },
       })) ?? [],
-    fallback: false,
+    // Enable statically generating additional pages
+    fallback: true,
   };
 }
 
 export async function getStaticProps({ params }) {
   const data = await faunaQueries.getPostBySlug(params.slug);
 
-  return { props: data };
+  return {
+    props: data,
+    // Next.js will attempt to re-generate the page:
+    // - When a request comes in
+    // - At most once every second
+    revalidate: 1, // In seconds
+  };
 }
 
 export default Post;
