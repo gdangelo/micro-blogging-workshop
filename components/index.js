@@ -1,5 +1,7 @@
 export { default as Card } from './Card';
 export { default as CardSkeleton } from './CardSkeleton';
+export { default as CustomLink } from './CustomLink';
+export { default as CodeBlock } from './CodeBlock';
 export { default as Editor } from './Editor';
 export { default as FlyoutMenu } from './FlyoutMenu';
 export { default as MobileMenu } from './MobileMenu';
