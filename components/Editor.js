@@ -101,7 +101,7 @@ const Editor = ({
         </div>
 
         <a
-          href="https://daringfireball.net/projects/markdown/"
+          href="https://commonmark.org/help/"
           target="_blank"
           rel="noopener noreferrer"
           className="hidden sm:flex items-center space-x-1 hover:text-blue-600"
