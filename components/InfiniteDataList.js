@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { useDebouncedCallback } from 'use-debounce';
 import useInfiniteQuery from '@/hooks/use-infinite-query';
-import { isInViewport } from '@/lib/util';
+import { isInViewport } from '@/lib/utils';
 import { Card, CardSkeleton } from '@/components/index';
 import { ExclamationCircleIcon } from '@heroicons/react/outline';
 import toast from 'react-hot-toast';

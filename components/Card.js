@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { formatDate } from '@/lib/util';
+import { formatDate } from '@/lib/utils';
 
 const Card = props => (
   <Link

@@ -55,7 +55,6 @@ const Editor = ({
         maxLength="150"
         placeholder="Title…"
         disabled={disabled}
-        autoFocus
         className="w-full text-3xl font-bold leading-snug bg-transparent outline-none appearance-none resize-none disabled:cursor-not-allowed"
       />
 

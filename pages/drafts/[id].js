@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 import { useSession } from 'next-auth/client';
 import useSWR from 'swr';
 import axios from 'axios';
-import { fetcher, isAuthorized } from '@/lib/util';
+import { fetcher, isAuthorized } from '@/lib/utils';
 import { Layout } from '@/sections/index';
 import { Editor } from '@/components/index';
 import toast from 'react-hot-toast';
@@ -80,6 +80,8 @@ const Draft = () => {
         toastId = toast.loading('Deleting...');
         // Perform query
         await axios.delete(`/api/posts/${data.id}`);
+        // Update cache, but disable the revalidation
+        mutate(null, false);
         // Remove toast
         toast.dismiss(toastId);
         // Redirect

@@ -1,5 +1,5 @@
 import { useSWRInfinite } from 'swr';
-import { fetcher } from '@/lib/util';
+import { fetcher } from '@/lib/utils';
 
 export default function useInfiniteQuery(queryKey) {
   const { data, error, size, setSize } = useSWRInfinite(

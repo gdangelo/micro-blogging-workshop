@@ -1,5 +1,5 @@
 import { useSession } from 'next-auth/client';
-import { protectRoute } from '@/lib/util';
+import { protectRoute } from '@/lib/utils';
 import { Layout } from '@/sections/index';
 import { InfiniteDataList } from '@/components/index';
 

@@ -1,7 +1,7 @@
 import { useRouter } from 'next/router';
 import { useSession } from 'next-auth/client';
 import axios from 'axios';
-import { protectRoute } from '@/lib/util';
+import { protectRoute } from '@/lib/utils';
 import { Layout } from '@/sections/index';
 import { Editor } from '@/components/index';
 import toast from 'react-hot-toast';
@@ -34,7 +34,7 @@ const NewDraft = () => {
       }}
     >
       <div className="w-full max-w-screen-lg mx-auto py-8 sm:py-12">
-        <Editor onChange={handleOnChange} showDeleteButton={false} />
+        <Editor onChange={handleOnChange} />
       </div>
     </Layout>
   );
