@@ -33,10 +33,14 @@ const Header = () => {
   const menuRef = useRef();
 
   const [session, loading] = useSession();
-  const { theme, setTheme } = useTheme();
+
+  const [mounted, setMounted] = useState(false);
+  const { theme, systemTheme, setTheme } = useTheme();
 
   const [menuOpen, setMenuOpen] = useState(false);
   const [isLargeScreen, setIsLargeScreen] = useState(false);
+
+  useEffect(() => setMounted(true), []);
 
   useEffect(() => {
     const mql = window.matchMedia('(min-width: 640px)');
@@ -56,6 +60,30 @@ const Header = () => {
     };
   }, []);
 
+  const renderThemeChanger = () => {
+    if (!mounted) return null;
+
+    const currentTheme = theme === 'system' ? systemTheme : theme;
+
+    if (currentTheme === 'dark') {
+      return (
+        <SunIcon
+          className="w-7 h-7"
+          role="button"
+          onClick={() => setTheme('light')}
+        />
+      );
+    } else {
+      return (
+        <MoonIcon
+          className="w-7 h-7"
+          role="button"
+          onClick={() => setTheme('dark')}
+        />
+      );
+    }
+  };
+
   return (
     <header className="border-b border-gray-100 dark:border-gray-700">
       <div className="container mx-auto flex justify-between items-center px-4 sm:px-6 py-4">
@@ -70,19 +98,7 @@ const Header = () => {
             <GithubIcon className="w-7 h-7" />
           </a>
 
-          {theme === 'dark' ? (
-            <SunIcon
-              className="w-7 h-7"
-              role="button"
-              onClick={() => setTheme('light')}
-            />
-          ) : (
-            <MoonIcon
-              className="w-7 h-7"
-              role="button"
-              onClick={() => setTheme('dark')}
-            />
-          )}
+          {renderThemeChanger()}
 
           {!loading ? (
             <div>

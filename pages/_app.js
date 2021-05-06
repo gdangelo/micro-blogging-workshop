@@ -14,7 +14,7 @@ Router.events.on('routeChangeError', () => NProgress.done());
 function MyApp({ Component, pageProps }) {
   return (
     <AuthProvider session={pageProps.session}>
-      <ThemeProvider attribute="class">
+      <ThemeProvider enableSystem={true} attribute="class">
         <Component {...pageProps} />
         <Toaster />
       </ThemeProvider>
