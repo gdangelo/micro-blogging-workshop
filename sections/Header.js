@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useSession, signIn } from 'next-auth/client';
 import { useTheme } from 'next-themes';
+import useMediaQuery from '@/hooks/use-media-query';
 
 import { Logo, FlyoutMenu, MobileMenu, GithubIcon } from '@/components/index';
 import {
@@ -38,27 +39,9 @@ const Header = () => {
   const { theme, systemTheme, setTheme } = useTheme();
 
   const [menuOpen, setMenuOpen] = useState(false);
-  const [isLargeScreen, setIsLargeScreen] = useState(false);
+  const isLargeScreen = useMediaQuery(['(min-width: 640px)'], [true], false);
 
   useEffect(() => setMounted(true), []);
-
-  useEffect(() => {
-    const mql = window.matchMedia('(min-width: 640px)');
-
-    if (mql.matches) {
-      setIsLargeScreen(true);
-    }
-
-    const eventListener = event => {
-      setIsLargeScreen(event.matches);
-    };
-
-    mql.addEventListener('change', eventListener);
-
-    return () => {
-      mql.removeEventListener('change', eventListener);
-    };
-  }, []);
 
   const renderThemeChanger = () => {
     if (!mounted) return null;
