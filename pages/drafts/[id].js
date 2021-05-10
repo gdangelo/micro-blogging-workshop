@@ -14,12 +14,13 @@ import {
   RefreshIcon,
 } from '@heroicons/react/outline';
 
-const Draft = () => {
+const Draft = ({ initialData }) => {
   const router = useRouter();
   const [session] = useSession();
   const { data, error, mutate } = useSWR(
     () => (session?.user ? `/api/posts/${router?.query?.id}` : null),
-    fetcher
+    fetcher,
+    initialData
   );
   const [publishing, setPublishing] = useState(false);
   const [savingStatus, setSavingStatus] = useState('saved');

@@ -9,12 +9,13 @@ import { Editor } from '@/components/index';
 import { ExclamationCircleIcon } from '@heroicons/react/outline';
 import toast from 'react-hot-toast';
 
-const Edit = () => {
+const Edit = ({ initialData }) => {
   const router = useRouter();
   const [session] = useSession();
   const { data, error, mutate } = useSWR(
     () => (session?.user ? `/api/posts/${router?.query?.id}` : null),
-    fetcher
+    fetcher,
+    initialData
   );
   const [publishing, setPublishing] = useState(false);
 

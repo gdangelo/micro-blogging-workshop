@@ -74,7 +74,7 @@ const Post = ({
               {/* Actions */}
               {session && session.user.email === author.email ? (
                 <div className="flex items-center space-x-1">
-                  <Link href={`/edit/${encodeURIComponent(id)}`}>
+                  <Link href={`/edit/${id}`}>
                     <a className="bg-transparent hover:bg-gray-200 dark:hover:bg-gray-800 rounded-md px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-opacity-50 flex items-center space-x-1">
                       <PencilIcon className="w-5 h-5 flex-shrink-0" />
                       <span>Edit</span>
