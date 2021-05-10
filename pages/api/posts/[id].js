@@ -1,5 +1,6 @@
 import { faunaQueries } from '@/lib/fauna';
 
+// -> /api/posts/[id]
 export default async function handler(req, res) {
   try {
     const { id } = req.query;

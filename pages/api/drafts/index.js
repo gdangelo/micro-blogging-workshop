@@ -1,5 +1,6 @@
 import { faunaQueries } from '@/lib/fauna';
 
+// -> /api/drafts
 export default async function handler(req, res) {
   try {
     const { size = 10, cursor = undefined, author = '' } = req.query;

@@ -1,5 +1,6 @@
 import { faunaQueries } from '@/lib/fauna';
 
+// -> /api/posts
 export default async function handler(req, res) {
   try {
     // Get posts

@@ -1,12 +1,13 @@
-import { useEffect, useRef } from 'react';
-import { useDebouncedCallback } from 'use-debounce';
-import useInfiniteQuery from '@/hooks/use-infinite-query';
-import { isInViewport } from '@/lib/utils';
-import { Card, CardSkeleton } from '@/components/index';
-import { ExclamationCircleIcon } from '@heroicons/react/outline';
+import { useRef, useEffect } from 'react';
 import toast from 'react-hot-toast';
+import useInfiniteQuery from '../hooks/use-infinite-query';
+import { ExclamationCircleIcon } from '@heroicons/react/outline';
+import Card from './Card';
+import CardSkeleton from './CardSkeleton';
+import { isInViewport } from '../lib/utils';
+import { useDebouncedCallback } from 'use-debounce';
 
-const InfiniteDataList = ({ queryKey }) => {
+const InfiniteDataList = ({ queryKey, initialData }) => {
   const moreRef = useRef();
 
   const {
@@ -16,7 +17,7 @@ const InfiniteDataList = ({ queryKey }) => {
     fetchNextPage,
     isFetchingInitialData,
     isFetchingNextPage,
-  } = useInfiniteQuery(queryKey);
+  } = useInfiniteQuery(queryKey, initialData);
 
   // Debounced callback to fetch more data
   const loadMore = useDebouncedCallback(() => {
@@ -56,11 +57,11 @@ const InfiniteDataList = ({ queryKey }) => {
     <div>
       <div className="grid sm:grid-cols-2 gap-8 max-w-screen-lg mx-auto">
         {data?.map(item => (
-          <Card {...item} />
+          <Card key={item.id} {...item} />
         ))}
 
-        {isFetchingInitialData || isFetchingNextPage
-          ? [...new Array(10)].map(i => <CardSkeleton key={i} />)
+        {isFetchingNextPage
+          ? [...new Array(10)].map((_, i) => <CardSkeleton key={i} />)
           : null}
       </div>
 

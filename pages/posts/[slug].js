@@ -108,16 +108,15 @@ export async function getStaticPaths() {
 
   do {
     const { data, after } = await faunaQueries.getAllSlugs({ after: cursor });
-    cursor = after;
     slugs = [...slugs, ...data];
+    cursor = after;
   } while (cursor);
 
   return {
     // Existing posts are rendered to HTML at build time
-    paths:
-      slugs?.map(slug => ({
-        params: { slug },
-      })) ?? [],
+    paths: slugs?.map(slug => ({
+      params: { slug },
+    })),
     // Enable statically generating additional pages
     fallback: true,
   };

@@ -1,10 +1,10 @@
 import { useSWRInfinite } from 'swr';
 import { fetcher } from '@/lib/utils';
 
-export default function useInfiniteQuery(queryKey) {
+export default function useInfiniteQuery(queryKey, initialData) {
   const { data, error, size, setSize } = useSWRInfinite(
     (pageIndex, previousPageData) => {
-      // reached the endpoint
+      // reached the end
       if (previousPageData && !previousPageData.after) return null;
       // first page, we don't have `previousPageData`
       if (pageIndex === 0) return queryKey;
@@ -14,7 +14,8 @@ export default function useInfiniteQuery(queryKey) {
         JSON.stringify(previousPageData.after)
       )}`;
     },
-    fetcher
+    fetcher,
+    initialData
   );
 
   const fetchNextPage = () => setSize(size => size + 1);

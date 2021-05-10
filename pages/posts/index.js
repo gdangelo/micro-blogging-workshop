@@ -1,7 +1,7 @@
 import { Layout } from '@/sections/index';
 import { InfiniteDataList } from '@/components/index';
 
-const Posts = () => {
+const Posts = ({ initialData }) => {
   return (
     <Layout>
       <section className="text-center pt-12 sm:pt-24 pb-16">
@@ -10,9 +10,28 @@ const Posts = () => {
         </h1>
       </section>
 
-      <InfiniteDataList queryKey="/api/posts" />
+      <InfiniteDataList queryKey="/api/posts" initialData={initialData} />
     </Layout>
   );
 };
+
+export async function getStaticProps() {
+  try {
+    const initialData = await faunaQueries.getPosts();
+
+    return {
+      props: {
+        data: initialData,
+      },
+      revalidate: 1,
+    };
+  } catch (error) {
+    return {
+      props: {
+        data: [],
+      },
+    };
+  }
+}
 
 export default Posts;
